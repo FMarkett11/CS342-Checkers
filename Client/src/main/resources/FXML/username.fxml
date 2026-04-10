@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane minHeight="360" minWidth="640" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UsernameController">
+
+    <AnchorPane>
+    <TextField fx:id="usernameField" layoutX="246.0" layoutY="125.0" onAction="#handleLogin" promptText="Enter a username" />
+    </AnchorPane>
+
+</StackPane>
