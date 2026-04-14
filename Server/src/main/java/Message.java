@@ -7,6 +7,10 @@ public class Message implements Serializable {
     public String sender;
     public String recipient;
     public String message;
+    public boolean myTurn;
+    public boolean isKing;
+    public String prevLoc;
+    public String newLoc;
 
 
     public Message(String type, String sender, String recipient, String str){
@@ -14,6 +18,17 @@ public class Message implements Serializable {
         this.sender = sender;
         this.recipient = recipient;
         message = str;
+    }
+
+    public Message(String type, String sender, String recipient, String str, boolean myTurn, boolean isKing, String prevLoc, String newLoc){
+        this.type = type;
+        this.sender = sender;
+        this.recipient = recipient;
+        message = str;
+        this.myTurn = myTurn;
+        this.isKing = isKing;
+        this.prevLoc = prevLoc;
+        this.newLoc = newLoc;
     }
 
     public String toString(){

@@ -20,6 +20,17 @@ public class Message implements Serializable {
         message = str;
     }
 
+    public Message(String type, String sender, String recipient, String str, boolean myTurn, boolean isKing, String prevLoc, String newLoc){
+        this.type = type;
+        this.sender = sender;
+        this.recipient = recipient;
+        message = str;
+        this.myTurn = myTurn;
+        this.isKing = isKing;
+        this.prevLoc = prevLoc;
+        this.newLoc = newLoc;
+    }
+
     public String toMessage(){
         return message;
     }
