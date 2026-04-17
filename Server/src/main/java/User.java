@@ -14,4 +14,6 @@ public class User implements Serializable {
         this.losses = 0;
         this.draws = 0;
     }
+
+    public String toString() {return username;}
 }

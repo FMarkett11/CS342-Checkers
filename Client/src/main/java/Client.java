@@ -15,6 +15,8 @@ public class Client extends Thread{
 	ObjectOutputStream out;
 	ObjectInputStream in;
 
+	boolean isHost = false;
+
 	public String uname;
 
 	private Consumer<Serializable> callback;
@@ -72,5 +74,17 @@ public class Client extends Thread{
 	}
 
 	public void createAccount(String username, String password){ send(new Message("creation", username, null, password));}
+
+	public void createLobby(){ send(new Message("host", uname, null, ""));}
+
+	public void joinLobby(String host){ send(new Message("join", uname, host, ""));}
+
+	public void leaveLobby(){
+		if(isHost){
+			send(new Message("unhost", uname, null, ""));
+			return;
+		}
+		send(new Message("leave_lobby", uname, null, ""));
+	}
 
 }

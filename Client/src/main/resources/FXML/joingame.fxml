@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JoinController">
+    <AnchorPane fx:id="AnchorPane">
+      <children>
+         <ComboBox fx:id="hosts" layoutX="65.0" layoutY="6.0" prefHeight="25.0" prefWidth="572.0" />
+         <Button layoutX="6.0" layoutY="6.0" mnemonicParsing="false" onAction="#goBack" text="Back" />
+         <Button layoutX="301.0" layoutY="167.0" mnemonicParsing="false" onAction="#joinGame" text="Join" />
+         <Label fx:id="errLbl" layoutX="299.0" layoutY="47.0" styleClass="ErrorLabel" text="Label" visible="false" />
+      </children></AnchorPane>
+</StackPane>

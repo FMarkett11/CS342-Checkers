@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SelectionController">
+    <AnchorPane fx:id="AnchorPane">
+        <children>
+            <Button layoutX="299.0" layoutY="148.0" mnemonicParsing="false" text="Host" onAction="#goHost"/>
+            <Button layoutX="301.0" layoutY="186.0" mnemonicParsing="false" text="Join" onAction="#goJoin"/>
+        </children>
+    </AnchorPane>
+</StackPane>

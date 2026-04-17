@@ -3,11 +3,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane minHeight="360" minWidth="640" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
+<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
     <AnchorPane>
         <children>
             <ComboBox fx:id="connectedClients" layoutX="509.0" layoutY="3.0" prefHeight="10.0" prefWidth="86.0" />
             <ListView fx:id="chatList" layoutX="465.0" layoutY="58.0" prefHeight="301.0" prefWidth="175.0" />
             <TextField fx:id="messageField" layoutX="478.0" layoutY="31.0" onAction="#sendChat" promptText="Enter text:" />
+         <Label fx:id="dispMsg" layoutX="14.0" layoutY="58.0" styleClass="LoginLabel" text="Awaiting User..." textAlignment="CENTER" />
+         <Button layoutX="14.0" layoutY="16.0" mnemonicParsing="false" text="Back" onAction="#goBack"/>
         </children></AnchorPane>
 </StackPane>
