@@ -6,10 +6,10 @@
 <StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UsernameController">
 
     <AnchorPane fx:id="AnchorPane">
-        <TextField fx:id="usernameField" layoutX="211.0" layoutY="167.0" onAction="#handleLogin" prefHeight="25.0" prefWidth="218.0" promptText="Enter your username" />
+        <TextField fx:id="usernameField" layoutX="211.0" layoutY="167.0" onAction="#goToPass" prefHeight="25.0" prefWidth="218.0" promptText="Enter your username"/>
         <Label layoutX="251.0" layoutY="35.0" styleClass="LoginLabel" text="Login" />
         <Button fx:id="login" layoutX="383.0" layoutY="234.0" mnemonicParsing="false" text="Login" onAction="#handleLogin"/>
-        <PasswordField fx:id="passwordField" layoutX="211.0" layoutY="201.0" prefHeight="25.0" prefWidth="218.0" promptText="Enter your password" />
+        <PasswordField fx:id="passwordField" layoutX="211.0" layoutY="201.0" prefHeight="25.0" prefWidth="218.0" promptText="Enter your password" onAction="#handleLogin"/>
         <Button layoutX="210.0" layoutY="246.0" mnemonicParsing="false" onAction="#createAccount" prefHeight="25.0" prefWidth="109.0" text="Create Account" />
         <Button layoutX="213.0" layoutY="279.0" mnemonicParsing="false" text="Forgot Password" />
         <Label layoutX="204.0" layoutY="227.0" text="Dont have an account?" />

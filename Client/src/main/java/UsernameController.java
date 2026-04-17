@@ -33,6 +33,11 @@ public class UsernameController {
         SceneManager.loadScene("accountcreation.fxml");
     }
 
+    @FXML
+    private void goToPass(){
+        passwordField.requestFocus();
+    }
+
     public void displayError(String msg){
         errorLbl.setText(msg);
         errorLbl.setVisible(true);
