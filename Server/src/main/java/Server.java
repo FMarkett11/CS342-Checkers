@@ -1,9 +1,8 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 /*
  * Clicker: A: I really get it    B: No idea what you are talking about
@@ -16,12 +15,13 @@ public class Server{
 	ArrayList<ClientThread> clients = new ArrayList<ClientThread>();
 	TheServer server;
 	private Consumer<Serializable> callback;
-	HashMap<String, User> users = new HashMap<>();;
-	HashMap<String, ClientThread> loggedIn = new HashMap<>();
-	HashMap<String, ArrayList<String>> groups = new HashMap<>();
-	HashSet<User> hosts = new HashSet<>();
-	HashMap<User, User> matchesh2j = new HashMap<>();
-	HashMap<User, User> matchesj2h = new HashMap<>();
+	ConcurrentHashMap<String, User> users = new ConcurrentHashMap<>();;
+	ConcurrentHashMap<String, ClientThread> loggedIn = new ConcurrentHashMap<>();
+	ConcurrentHashMap<String, ArrayList<String>> groups = new ConcurrentHashMap<>();
+	Set<User> hosts = Collections.synchronizedSet(new HashSet<>());
+	ConcurrentHashMap<User, User> matchesh2j = new ConcurrentHashMap<>();
+	ConcurrentHashMap<User, User> matchesj2h = new ConcurrentHashMap<>();
+	private final Object matchLock = new Object();
 	
 	
 	Server(Consumer<Serializable> call){
@@ -36,7 +36,7 @@ public class Server{
 		public void loadUsers() {
 			try {
 				ObjectInputStream in = new ObjectInputStream(new FileInputStream("users.dat"));
-				users = (HashMap<String, User>) in.readObject();
+				users = (ConcurrentHashMap<String, User>) in.readObject();
 				in.close();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -227,54 +227,73 @@ public class Server{
 							if(data.type.equals("host")){
 								callback.accept(data.sender + " is hosting a lobby");
 								hosts.add(users.get(data.sender));
-								matchesh2j.put(users.get(data.sender), null);
 								updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
 								updateSingleClient(new Message("hosting_started", "server", data.sender, ""));
 							}
 
 							if(data.type.equals("unhost")){
 								callback.accept(data.sender + " is no longer hosting a lobby");
-								hosts.remove(users.get(data.sender));
-								if(matchesh2j.get(users.get(data.sender)) != null){
-									updateSingleClient(new Message("leave_lobby", "server", matchesh2j.get(users.get(data.sender)).toString(), data.sender + " has stopped hosting!"));
+								synchronized(matchLock){
+									hosts.remove(users.get(data.sender));
+									if(matchesh2j.get(users.get(data.sender)) != null){
+										updateSingleClient(new Message("leave_lobby", "server", matchesh2j.get(users.get(data.sender)).toString(), data.sender + " has stopped hosting!"));
+									}
+									matchesj2h.remove(matchesh2j.get(users.get(data.sender)));
+									matchesh2j.remove(users.get(data.sender));
 								}
-                                matchesj2h.remove(matchesh2j.get(users.get(data.sender)));
-								matchesh2j.remove(users.get(data.sender));
 								updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
 							}
 
 							if(data.type.equals("leave_lobby")){
-								callback.accept(data.sender + " has left " + matchesj2h.get(users.get(data.sender)) + "'s lobby.");
-								updateSingleClient(new Message("leave_lobby", "server", matchesj2h.get(users.get(data.sender)).toString(), data.sender + " has left your lobby!"));
-								matchesh2j.put(matchesj2h.get(users.get(data.sender)), null);
-								matchesj2h.remove(users.get(data.sender));
+								User joiner = users.get(data.sender);
+								User host = matchesj2h.get(joiner);
+								if (host == null) {
+									callback.accept("ERROR: Host not found for " + data.sender);
+									continue;
+								}
+								callback.accept(data.sender + " has left " + host + "'s lobby.");
+								updateSingleClient(new Message("leave_lobby", "server", host.toString(), data.sender + " has left your lobby!"));
+								synchronized(matchLock){
+									matchesj2h.remove(joiner);
+									hosts.add(host);
+								}
+								updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
 							}
 
 							//If a user requests to join a lobby
 							if(data.type.equals("join")){
+								if(data.recipient == null){
+									continue;
+								}
 								callback.accept(data.sender + " is joining a lobby with " + data.recipient);
-								matchesh2j.put(users.get(data.recipient), users.get(data.sender));
-								matchesj2h.put(users.get(data.sender), users.get(data.recipient));
+								synchronized(matchLock){
+									matchesh2j.put(users.get(data.recipient), users.get(data.sender));
+									matchesj2h.put(users.get(data.sender), users.get(data.recipient));
+									hosts.remove(users.get(data.recipient));
+								}
 								updateSingleClient(new Message("match_created", "server", data.sender, "You have successfully joined a lobby with " + data.recipient + "!"));
 								updateSingleClient(new Message("match_created", "server", data.recipient, data.sender + " has successfully joined your lobby."));
-								hosts.remove(users.get(data.recipient));
 								updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
 							}
 					    	
 						}
-					    catch(Exception e) {
-							//Uncomment for debugging
-							//e.printStackTrace();
+						catch(Exception e) {
+							//uncomment for debugging
+							//e.printstacktrace()
 							callback.accept("Something wrong with the socket from client: " + count + "....closing down!");
 							updateClients(new Message("notification", "server", "ALL", this.uname + " has left the server!"));
 							if(hosts.contains(users.get(this.uname))){
-								hosts.remove(users.get(this.uname));
+								synchronized(matchLock){
+									hosts.remove(users.get(this.uname));
+								}
 								updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
 							}
 							if(matchesj2h.containsKey(users.get(this.uname))){
 								updateSingleClient(new Message("leave_lobby", "server", matchesj2h.get(users.get(this.uname)).toString(), this.uname + " has left your lobby!"));
-								matchesh2j.put(matchesj2h.get(users.get(this.uname)), null);
-								matchesj2h.remove(users.get(this.uname));
+								synchronized(matchLock){
+									matchesh2j.put(matchesj2h.get(users.get(this.uname)), null);
+									matchesj2h.remove(users.get(this.uname));
+								}
 							}
 							loggedIn.remove(this.uname);
 							clients.remove(this);

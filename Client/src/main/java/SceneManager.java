@@ -152,8 +152,12 @@ public class SceneManager {
             case "leave_lobby":
                 if(clientController != null){
                     Platform.runLater(() -> {
-                       clientController.hideBoard();
-                       clientController.displayText("Awaiting User...");
+                       if(!GuiClient.clientConnection.isHost){
+                           SceneManager.loadScene("selection.fxml");
+                       } else{
+                           clientController.hideBoard();
+                           clientController.displayText("Awaiting User...");
+                       }
                     });
                 }
                 break;
