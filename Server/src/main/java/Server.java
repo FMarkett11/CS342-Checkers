@@ -154,6 +154,8 @@ public class Server{
 								out.writeObject(new Message("login_success", "server", uname, "Welcome!"));
 								updateClients(new Message("notification","server", "ALL", "new client on server: " + this.uname));
 								updateClients(new Message("user_list", "server", null, loggedIn.keySet().toString().substring(1, loggedIn.keySet().toString().length() - 1)));
+								updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
+
 								callback.accept("client #" + count + "has logged into " + data.sender);
 							}
 
@@ -233,6 +235,9 @@ public class Server{
 							if(data.type.equals("unhost")){
 								callback.accept(data.sender + " is no longer hosting a lobby");
 								hosts.remove(users.get(data.sender));
+								if(matchesh2j.get(users.get(data.sender)) != null){
+									updateSingleClient(new Message("leave_lobby", "server", matchesh2j.get(users.get(data.sender)).toString(), data.sender + " has stopped hosting!"));
+								}
                                 matchesj2h.remove(matchesh2j.get(users.get(data.sender)));
 								matchesh2j.remove(users.get(data.sender));
 								updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));

@@ -144,6 +144,9 @@ public class SceneManager {
                         clientController.initBoard();
                     });
                 }
+                if (clientController != null) {
+                    clientController.addMessage(msg.toMessage());
+                }
                 break;
 
             case "leave_lobby":
