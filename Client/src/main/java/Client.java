@@ -37,8 +37,8 @@ public class Client extends Thread{
 		while(true) {
 			 
 			try {
-			Message message = (Message) in.readObject();
-			callback.accept(message);
+				Message message = (Message) in.readObject();
+				callback.accept(message);
 			}
 			catch(Exception e) {}
 		}
@@ -55,8 +55,8 @@ public class Client extends Thread{
 		}
 	}
 
-	public void sendUsername(String username){
-		send(new Message("login", username, null, ""));
+	public void sendLogin(String username, String password){
+		send(new Message("login", username, null, password));
 	}
 
 	public void createGroup(String groupID, String groupMembers){
@@ -70,5 +70,7 @@ public class Client extends Thread{
 	public void groupSend(String msg, String group) {
 		send(new Message("group_send", uname, group, msg));
 	}
+
+	public void createAccount(String username, String password){ send(new Message("creation", username, null, password));}
 
 }

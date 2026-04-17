@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,6 +12,10 @@ public class SceneManager {
     private static Stage primaryStage;
 
     public static ClientController clientController;
+
+    public static AccountCreator accountController;
+
+    public static UsernameController usernameController;
 
     private static final List<Message> pendingMessages = new ArrayList<>();
 
@@ -26,8 +31,14 @@ public class SceneManager {
 
             Parent root = loader.load();
 
-            if (fxml.contains("client.fxml")) {
+            if (fxml.equals("client.fxml")) {
                 clientController = loader.getController();
+            }
+            if(fxml.equals("accountcreation.fxml")){
+                accountController = loader.getController();
+            }
+            if(fxml.equals("username.fxml")){
+                usernameController = loader.getController();
             }
 
             primaryStage.setScene(new Scene(root));
@@ -38,14 +49,9 @@ public class SceneManager {
     }
 
     public static void handleMessage(Message msg) {
-
-        if (clientController == null && !msg.type.equals("login_success")) {
-            pendingMessages.add(msg);
-            return;
-        }
-
         switch (msg.type) {
 
+            //login
             case "login_success":
                 loadScene("client.fxml");
 
@@ -59,15 +65,40 @@ public class SceneManager {
                 }
                 break;
 
+            //update the user list
             case "user_list":
-                if (clientController != null) {
-                    clientController.updateUsers(msg);
+            //Add to chat
+            case "message":
+                if (clientController == null) {
+                    pendingMessages.add(msg);   // buffer only what needs client UI
+                } else {
+                    processMessage(msg);
                 }
                 break;
 
-            case "error":
+            //create account
+            case "successful_creation":
+                if (accountController != null) {
+                    Platform.runLater(() ->
+                            accountController.successful_creation(msg.message)
+                    );
+                }
                 break;
-
+            //Display error
+            case "creation_error":
+                if (accountController != null) {
+                    Platform.runLater(() ->
+                            accountController.errorOccured(msg.message)
+                    );
+                }
+                break;
+            case "login_error":
+                if(usernameController != null){
+                    Platform.runLater(() -> {
+                        usernameController.displayError(msg.message);
+                    });
+                }
+            //Fallback
             default:
                 if (clientController != null) {
                     clientController.addMessage(msg.toMessage());

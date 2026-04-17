@@ -1,0 +1,14 @@
+.LoginLabel {
+    -fx-effect: dropshadow(gaussian, black, 1, 1, 0, 0);
+    -fx-text-fill: white;
+    -fx-font-size: 50;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+}
+
+.ErrorLabel {
+    -fx-effect: dropshadow(gaussian, black, .5, .5, 0, 0);
+    -fx-text-fill: red;
+    -fx-font-size: 15;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-text-alignment: center;
+}
