@@ -28,6 +28,10 @@ public class SceneManager {
 
     //Load a new scene from an FXML file
     public static void loadScene(String fxml) {
+        clientController = null;
+        accountController = null;
+        joinController = null;
+        usernameController = null;
         try {
             //Fetch the FXML file
             FXMLLoader loader = new FXMLLoader(
@@ -50,6 +54,7 @@ public class SceneManager {
                     break;
                 case "joingame.fxml":
                     joinController = loader.getController();
+                    GuiClient.clientConnection.send(new Message("request_host_list", GuiClient.clientConnection.uname, "server", "please..."));
 
                     for (Message m : pendingMessages) {
                         if (m.type.equals("host_list")) {
@@ -134,9 +139,8 @@ public class SceneManager {
 
             case "match_created":
                 if (clientController == null) {
-                    loadScene("client.fxml");
-
                     Platform.runLater(() -> {
+                        loadScene("client.fxml");
                         clientController.initBoard();
                     });
                 } else {
@@ -154,18 +158,20 @@ public class SceneManager {
                     Platform.runLater(() -> {
                        if(!GuiClient.clientConnection.isHost){
                            SceneManager.loadScene("selection.fxml");
+                           clearPendingMessages();
+                           GuiClient.clientConnection.isHost = false;
                        } else{
                            clientController.hideBoard();
                            clientController.displayText("Awaiting User...");
+                           clientController.addMessage(msg.toMessage());
                        }
                     });
                 }
                 break;
 
             case "hosting_started":
-                loadScene("client.fxml");
-
                 Platform.runLater(() -> {
+                    loadScene("client.fxml");
                     clientController.displayText("Awaiting user...");
                 });
                 break;
@@ -185,13 +191,17 @@ public class SceneManager {
 
             //Update user list in chat UI
             case "user_list":
-                clientController.updateUsers(msg);
+                Platform.runLater(()->{
+                    clientController.updateUsers(msg);
+                });
                 break;
 
             //Update available hosts in join game scene
             case "host_list":
                 if (joinController != null) {
-                    joinController.updateHosts(msg);
+                    Platform.runLater(() -> {
+                        joinController.updateHosts(msg);
+                    });
                 }
                 break;
 
