@@ -36,4 +36,8 @@ public class Message implements Serializable {
 
         if(recipient != null) return "{" + type + "}" + sender + "to" + recipient + ": " + message; else return "{" + type + "}" + sender + ": " + message;
     }
+
+    public String toMessage(){
+        return message;
+    }
 }
