@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Message implements Serializable {
@@ -7,10 +8,10 @@ public class Message implements Serializable {
     public String sender;
     public String recipient;
     public String message;
-    public boolean myTurn;
-    public boolean isKing;
-    public String prevLoc;
-    public String newLoc;
+    public String[][] board;
+    int row;
+    int col;
+    ArrayList<int[]> validMoves;
 
 
     public Message(String type, String sender, String recipient, String str){
@@ -20,15 +21,15 @@ public class Message implements Serializable {
         message = str;
     }
 
-    public Message(String type, String sender, String recipient, String str, boolean myTurn, boolean isKing, String prevLoc, String newLoc){
+    public Message(String type, String sender, String recipient, String str, boolean myTurn, String[][] board, int row, int col, ArrayList<int[]> validMoves){
         this.type = type;
         this.sender = sender;
         this.recipient = recipient;
         message = str;
-        this.myTurn = myTurn;
-        this.isKing = isKing;
-        this.prevLoc = prevLoc;
-        this.newLoc = newLoc;
+        this.board = board;
+        this.row = row;
+        this.col = col;
+        this.validMoves = validMoves;
     }
 
     public String toString(){
