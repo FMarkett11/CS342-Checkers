@@ -8,7 +8,7 @@ public class Message implements Serializable {
     public String sender;
     public String recipient;
     public String message;
-    public String[][] board;
+    public checkersBoard board;
     int row;
     int col;
     ArrayList<int[]> validMoves;
@@ -21,7 +21,7 @@ public class Message implements Serializable {
         message = str;
     }
 
-    public Message(String type, String sender, String recipient, String str, boolean myTurn, String[][] board, int row, int col, ArrayList<int[]> validMoves){
+    public Message(String type, String sender, String recipient, String str, checkersBoard board, int row, int col, ArrayList<int[]> validMoves){
         this.type = type;
         this.sender = sender;
         this.recipient = recipient;
