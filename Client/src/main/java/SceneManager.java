@@ -226,6 +226,7 @@ public class SceneManager {
                     loadScene("client.fxml");
                     //Display that you are now awaiting a user
                     clientController.displayText("Awaiting user...");
+                    clientController.initBoard();// todo add somewhere where it makes more sense
                 });
                 break;
             //Fallback display message in chat if possible
