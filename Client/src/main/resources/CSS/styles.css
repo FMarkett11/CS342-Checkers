@@ -1,14 +1,74 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #84593d, #4c2b08);
+}
 .LoginLabel {
-    -fx-effect: dropshadow(gaussian, black, 1, 1, 0, 0);
-    -fx-text-fill: white;
-    -fx-font-size: 50;
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 42px;
     -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, black, 8, 0.3, 0, 2);
+}
+.CreationLabel {
+    -fx-text-fill: #f5f5f5;
+    -fx-font-size: 38px;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, black, 8, 0.3, 0, 2);
+}
+.ErrorLabel {
+    -fx-text-fill: #ff3333;
+    -fx-font-size: 14px;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, black, 8, 0.3, 0, 2);
+}
+.input-field {
+    -fx-pref-height: 40px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-border-color: transparent;
+    -fx-background-color: #eeeeee;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #777777;
+    -fx-padding: 0 10 0 10;
+}
+.input-field:focused {
+    -fx-border-color: #c0392b;
+    -fx-border-width: 1.5;
+}
+.primary-button {
+    -fx-background-color: #c0392b;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+
+    -fx-background-radius: 20px;
+    -fx-pref-height: 40px;
+
+    -fx-effect: dropshadow(gaussian, black, 6, 0.5, 0, 2);
+}
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #ff5555, #c0392b);
 }
 
-.ErrorLabel {
-    -fx-effect: dropshadow(gaussian, black, .5, .5, 0, 0);
-    -fx-text-fill: red;
-    -fx-font-size: 15;
-    -fx-font-family: "Consolas", "Courier New", monospace;
-    -fx-text-alignment: center;
+.secondary-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #dddddd;
+    -fx-effect: dropshadow(gaussian, black, 2, 0.3, 0, 1);
+}
+
+.secondary-button:hover {
+    -fx-text-fill: white;
+}
+
+.link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #5c9eef;
+}
+
+.link-button:hover {
+    -fx-underline: true;
+}
+
+.subtle-text {
+    -fx-text-fill: #aaaaaa;
+    -fx-font-size: 12px;
 }

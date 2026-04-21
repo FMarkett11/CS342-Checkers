@@ -3,14 +3,16 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AccountCreator">
-    <AnchorPane fx:id="AnchorPane">
-        <TextField fx:id="usernameField" layoutX="211.0" layoutY="167.0" prefHeight="25.0" prefWidth="218.0" promptText="Enter your username" />
-        <Label layoutX="127.0" layoutY="28.0" styleClass="LoginLabel" text="Create Account" />
-        <Button fx:id="login" layoutX="378.0" layoutY="270.0" mnemonicParsing="false" onAction="#handleAccountCreation" text="Create" />
-        <PasswordField fx:id="passwordField" layoutX="211.0" layoutY="201.0" prefHeight="25.0" prefWidth="218.0" promptText="Enter your password" />
-        <PasswordField fx:id="repassField" layoutX="211.0" layoutY="235.0" prefHeight="25.0" prefWidth="218.0" promptText="Re-enter your password" />
-      <Button fx:id="back" layoutX="14.0" layoutY="16.0" mnemonicParsing="false" onAction="#goBack" text="Back" />
-      <Label fx:id="errorLbl" layoutY="127.0" prefHeight="18.0" prefWidth="640.0" styleClass="ErrorLabel" text="Label" textAlignment="CENTER" visible="false" />
+<StackPane minHeight="360" minWidth="640" styleClass="root" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="AccountCreator">
+    <AnchorPane>
+        <Button fx:id="back" layoutX="15" layoutY="15" onAction="#goBack" styleClass="secondary-button" text="Back" />
     </AnchorPane>
+    <VBox alignment="CENTER" maxWidth="320" spacing="15">
+        <Label prefHeight="49.0" prefWidth="294.0" styleClass="CreationLabel" text="Create Account" textAlignment="CENTER" />
+        <Label fx:id="errorLbl" maxWidth="280" styleClass="ErrorLabel" visible="false" wrapText="true" />
+        <TextField fx:id="usernameField" promptText="Enter your username" styleClass="input-field" />
+        <PasswordField fx:id="passwordField" promptText="Enter your password" styleClass="input-field" />
+        <PasswordField fx:id="repassField" promptText="Re-enter your password" styleClass="input-field" />
+        <Button fx:id="login" maxWidth="Infinity" onAction="#handleAccountCreation" styleClass="primary-button" text="Create" />
+    </VBox>
 </StackPane>

@@ -3,17 +3,15 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UsernameController">
-
-    <AnchorPane fx:id="AnchorPane">
-        <TextField fx:id="usernameField" layoutX="211.0" layoutY="167.0" onAction="#goToPass" prefHeight="25.0" prefWidth="218.0" promptText="Enter your username"/>
-        <Label layoutX="251.0" layoutY="35.0" styleClass="LoginLabel" text="Login" />
-        <Button fx:id="login" layoutX="383.0" layoutY="234.0" mnemonicParsing="false" text="Login" onAction="#handleLogin"/>
-        <PasswordField fx:id="passwordField" layoutX="211.0" layoutY="201.0" prefHeight="25.0" prefWidth="218.0" promptText="Enter your password" onAction="#handleLogin"/>
-        <Button layoutX="210.0" layoutY="246.0" mnemonicParsing="false" onAction="#createAccount" prefHeight="25.0" prefWidth="109.0" text="Create Account" />
-        <Button layoutX="213.0" layoutY="279.0" mnemonicParsing="false" text="Forgot Password" />
-        <Label layoutX="204.0" layoutY="227.0" text="Dont have an account?" />
-        <Label fx:id="errorLbl" layoutY="127.0" prefHeight="18.0" prefWidth="640.0" styleClass="ErrorLabel" text="Label" textAlignment="CENTER" visible="false" />
-    </AnchorPane>
-
+<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UsernameController" styleClass="root">
+    <VBox alignment="CENTER" spacing="15" maxWidth="320">
+        <Label text="Login" styleClass="LoginLabel"/>
+        <Label fx:id="errorLbl" styleClass="ErrorLabel" visible="false" wrapText="true" maxWidth="280"/>
+        <TextField fx:id="usernameField" promptText="Enter your username" onAction="#goToPass" styleClass="input-field"/>
+        <PasswordField fx:id="passwordField" promptText="Enter your password" onAction="#handleLogin" styleClass="input-field"/>
+        <Button fx:id="login" text="Login" onAction="#handleLogin" styleClass="primary-button" maxWidth="Infinity"/>
+        <HBox spacing="10" alignment="CENTER"><Button text="Create Account" onAction="#createAccount" styleClass="secondary-button"/>
+            <Button text="Forgot Password" styleClass="link-button"/>
+        </HBox>
+    </VBox>
 </StackPane>
