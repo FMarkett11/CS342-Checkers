@@ -506,6 +506,7 @@ public class Server{
 									}
 								}
 							}
+							break;
 						}
 					} //end of while loop
 				}//end of run

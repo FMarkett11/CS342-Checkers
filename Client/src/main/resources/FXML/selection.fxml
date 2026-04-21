@@ -2,12 +2,19 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SelectionController">
-    <AnchorPane fx:id="AnchorPane">
+<StackPane minHeight="360" minWidth="640" styleClass="loginBG" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SelectionController">
+    <AnchorPane>
         <children>
-            <Button layoutX="299.0" layoutY="148.0" mnemonicParsing="false" text="Host" onAction="#goHost"/>
-            <Button layoutX="301.0" layoutY="186.0" mnemonicParsing="false" text="Join" onAction="#goJoin"/>
+
+            <Rectangle height="80" layoutX="-20" layoutY="0" styleClass="accent-rect-top" width="700" />
+            <Rectangle height="80.0" layoutX="-20.0" layoutY="301.0" styleClass="accent-rect-bottom" width="700" />
+
         </children>
     </AnchorPane>
+    <VBox alignment="CENTER" maxWidth="320" spacing="40">
+        <Button layoutX="299.0" layoutY="148.0" minHeight="70.0" minWidth="300" mnemonicParsing="false" onAction="#goHost" styleClass="primary-button" text="Host" />
+        <Button layoutX="301.0" layoutY="186.0" minHeight="70.0" minWidth="300" mnemonicParsing="false" onAction="#goJoin" styleClass="other-primary-button" text="Join" />
+    </VBox>
 </StackPane>

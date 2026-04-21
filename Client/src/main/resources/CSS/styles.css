@@ -45,8 +45,23 @@
 
     -fx-effect: dropshadow(gaussian, black, 6, 0.5, 0, 2);
 }
+
 .primary-button:hover {
     -fx-background-color: linear-gradient(to bottom right, #ff5555, #c0392b);
+}
+
+.other-primary-button {
+    -fx-background-color: #1e1e24;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+
+    -fx-background-radius: 20px;
+    -fx-pref-height: 40px;
+
+    -fx-effect: dropshadow(gaussian, black, 6, 0.5, 0, 2);
+}
+.other-primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #1e1e24, #000000);
 }
 
 .secondary-button {
@@ -71,4 +86,12 @@
 .subtle-text {
     -fx-text-fill: #aaaaaa;
     -fx-font-size: 12px;
+}
+
+.accent-rect-top {
+    -fx-fill: linear-gradient(to right, #ff555555, #c0392b11);
+}
+
+.accent-rect-bottom {
+    -fx-fill: linear-gradient(to top left, #1e1e2488, #00000022);
 }
