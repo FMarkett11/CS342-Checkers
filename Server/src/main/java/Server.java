@@ -505,6 +505,7 @@ public class Server{
 										cleanupMatch(disconnectingUser, joiner);
 									}
 								}
+								loggedIn.remove(this.uname);
 							}
 							break;
 						}

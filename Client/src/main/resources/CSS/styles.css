@@ -95,3 +95,13 @@
 .accent-rect-bottom {
     -fx-fill: linear-gradient(to top left, #1e1e2488, #00000022);
 }
+
+.combo-box {
+    -fx-pref-height: 40px;
+    -fx-background-radius: 6px;
+    -fx-background-color: #eeeeee;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: black;
+}
