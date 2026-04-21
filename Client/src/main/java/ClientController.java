@@ -193,4 +193,10 @@ public class ClientController {
         SceneManager.loadScene("selection.fxml");
     }
 
+    //Hightlight the squares that are valid moves
+    public void showValidMoves(ArrayList<int[]> validMoves, int row, int col){}
+
+    //Display the board to the user
+    public void makeBoard(checkersBoard board){}
+
 }

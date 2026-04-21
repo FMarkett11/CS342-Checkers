@@ -229,6 +229,16 @@ public class SceneManager {
                     clientController.initBoard();// todo add somewhere where it makes more sense
                 });
                 break;
+
+            //Highlight the valid moves just requested
+            case "valid_moves":
+                clientController.showValidMoves(msg.validMoves, msg.row, msg.col);
+                break;
+
+            //Display the updated board to the client
+            case "board_update":
+                clientController.makeBoard(msg.board);
+                break;
             //Fallback display message in chat if possible
             default:
                 //if the client controller is not null add the message to the chat
