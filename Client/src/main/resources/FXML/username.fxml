@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UsernameController" styleClass="root">
+<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="UsernameController" styleClass="loginBG">
     <VBox alignment="CENTER" spacing="15" maxWidth="320">
         <Label text="Login" styleClass="LoginLabel"/>
         <Label fx:id="errorLbl" styleClass="ErrorLabel" visible="false" wrapText="true" maxWidth="280"/>
