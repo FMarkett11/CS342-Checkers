@@ -1,6 +1,7 @@
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 
 public class ClientController {
 
@@ -14,8 +15,11 @@ public class ClientController {
     private ListView<String> chatList;
     @FXML
     private Label dispMsg;
-
     @FXML
+    private GridPane boardGrid;
+
+    private Button[][] boardButtons = new Button[8][8];
+    private int[] selectedPiece = null;  // stores [row, col] of clicked piece
     /*
         Mainly initializes the combo box to display all users properly.
         But even if we don't actually use the combo box, this is a good
@@ -48,6 +52,18 @@ public class ClientController {
     public void initBoard(){
         //Make the display text invisible
         dispMsg.setVisible(false);
+        dispMsg.setVisible(false);
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Button btn = new Button();
+                //btn.setPrefSize(0, 0);
+                final int r = row, c = col;
+                //btn.setOnAction(e -> handleSquareClick(r, c));
+                btn.setStyle("-fx-background-color: transparent;");
+                boardButtons[row][col] = btn;
+                boardGrid.add(btn, col, row);
+            }
+        }
     }
 
     //Hides the checkers board (TODO)
