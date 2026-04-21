@@ -27,7 +27,7 @@
     -fx-border-radius: 6px;
     -fx-border-color: transparent;
     -fx-background-color: #eeeeee;
-    -fx-text-fill: white;
+    -fx-text-fill: black;
     -fx-prompt-text-fill: #777777;
     -fx-padding: 0 10 0 10;
 }
