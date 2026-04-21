@@ -3,6 +3,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
+import java.util.ArrayList;
+
 public class ClientController {
 
     @FXML
@@ -119,5 +121,11 @@ public class ClientController {
         //Load the selection scene
         SceneManager.loadScene("selection.fxml");
     }
+
+    //Hightlight the squares that are valid moves
+    public void showValidMoves(ArrayList<int[]> validMoves, int row, int col){}
+
+    //Display the board to the user
+    public void makeBoard(checkersBoard board){}
 
 }

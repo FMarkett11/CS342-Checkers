@@ -32,7 +32,7 @@ public class Server{
 	ConcurrentHashMap<User, User> matchesh2j = new ConcurrentHashMap<>();
 	//A thread safe hashmap that stores the opposite of the hashmap above user -> host
 	ConcurrentHashMap<User, User> matchesj2h = new ConcurrentHashMap<>();
-	//A lock which synchronizes anythign that alters the three datatypes above
+	//A lock which synchronizes anything that alters the three datatypes above
 	private final Object matchLock = new Object();
 	
 	
@@ -414,6 +414,66 @@ public class Server{
 								//Send the host list to the user that requested it
 								updateSingleClient(new Message("host_list", "server", data.sender, hosts.toString().substring(1, hosts.toString().length() - 1)));
 							}
+
+							//If the user wants to see correct moves for a specific piece
+							if(data.type.equals("request_moves")){
+								//Fetch the current board
+								checkersBoard game = data.board;
+
+								//Get the valid moves for the piece given
+								ArrayList<int[]> moves = game.Vmoves(data.row, data.col);
+
+								//Send the valid moves back to the user
+								updateSingleClient(new Message("valid_moves", "server", data.sender, "", game, data.row, data.col, moves));
+							}
+
+							//If the user requests to make a move
+							if(data.type.equals("make_move")){
+								//Get the board sent over
+								checkersBoard game = data.board;
+
+								//Fetch the old row and column via the message
+								int oldrow = Integer.parseInt(data.message.substring(0, data.message.indexOf(",")));
+								int oldcol = Integer.parseInt(data.message.substring(data.message.indexOf(","), data.message.indexOf(",")));
+								//Get the valid moves for the piece trying to be moved
+								ArrayList<int[]> moves = game.Vmoves(oldrow, oldcol);
+
+								//Set isValid to be false by default
+								boolean isValid = false;
+
+								//Check to see if the updated move shows up in the valid moves. if it does have isValid be true and break
+								for(int[] i : moves){
+									if(i[0] == data.row && i[1] == data.col){
+										isValid = true;
+										break;
+									}
+								}
+
+								//If the move isn't valid do nothing (might make send an error message later)
+								if(!isValid) return;
+
+								//Move the piece requested
+								game.move(data.row, data.col, oldrow, oldcol, game.getBoard()[oldrow][oldcol]);
+
+								//Get the user who sent the message
+								String player1 = data.sender;
+								User p1 = users.get(player1);
+								String player2;
+								//Get the user who they are in a match with
+								if(matchesj2h.containsKey(p1)) player2 = matchesj2h.get(p1).username;
+								else player2 = matchesh2j.get(p1).username;
+
+								//Create the message which sends the updated board
+								Message newBoard = new Message("board_update", "server", player1 + " and " + player2,"",  game, -1, -1, null);
+
+								//Send the updated board to both clients in a match
+								newBoard.recipient = player1;
+								updateSingleClient(newBoard);
+								newBoard.recipient = player2;
+								updateSingleClient(newBoard);
+							}
+
+
 						}
 						catch(Exception e) {
 							//uncomment for debugging
