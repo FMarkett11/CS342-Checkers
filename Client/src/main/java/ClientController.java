@@ -4,11 +4,17 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
 
 public class ClientController {
 
+    @FXML
+    private StackPane overlay;
+    @FXML
+    private Label winlose;
     @FXML
     private TextField messageField;
     @FXML
@@ -21,6 +27,8 @@ public class ClientController {
     private Label dispMsg;
     @FXML
     private GridPane boardGrid;
+    @FXML
+    private VBox Rematch;
     private boolean isMyTurn = true;
     public checkersBoard board;
     private ArrayList<int[]> currentValidMoves = new ArrayList<>();
@@ -58,6 +66,9 @@ public class ClientController {
     public void initBoard(){
         //Make the display text invisible
         dispMsg.setVisible(false);
+
+        boardGrid.getChildren().clear();
+
         for (int row = 0; row < 8; row++) {//for every row
             for (int col = 0; col < 8; col++) { // for every column  make a new button and place it in the gridpane
                 Button btn = new Button();
@@ -296,6 +307,28 @@ public class ClientController {
     public void setTurn(boolean myTurn) {
         this.isMyTurn = myTurn;
         setBoardAble(!myTurn);
+    }
+
+    public void handleGameCompletion(String winner){
+        overlay.setMouseTransparent(false);
+        if(winner.equals("black") && GuiClient.clientConnection.isBlack) winlose.setText("You Win!");
+        else if(winner.equals("white") && !GuiClient.clientConnection.isBlack) winlose.setText("You Win!");
+        else winlose.setText("You Lose");
+        overlay.setVisible(true);
+    }
+
+    public void reset(){
+        selectedPiece = null;
+        currentValidMoves.clear();
+        clearHighlights();
+    }
+
+    @FXML
+    private void rematch(){
+        overlay.setVisible(false);
+        overlay.setMouseTransparent(true);
+        dispMsg.setVisible(true);
+        GuiClient.clientConnection.reqRematch();
     }
 
     public void makeBoard(checkersBoard board){

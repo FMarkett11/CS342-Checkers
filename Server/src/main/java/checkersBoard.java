@@ -20,7 +20,6 @@ public class checkersBoard implements Serializable {
             }
         }
 
-
         for(int i = 5; i < 8; i++){//populate top half with (b)lack
             for(int j = 0 + k; j < 8; j+=2){
                 board[i][j] = "b";
@@ -29,6 +28,14 @@ public class checkersBoard implements Serializable {
                 k = 0;
             }else{
                 k = 1;
+            }
+        }
+    }
+
+    public void clearBoard() {
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                board[i][j] = null;
             }
         }
     }
@@ -112,26 +119,22 @@ public class checkersBoard implements Serializable {
         }
     }
 
-    public String checkWin(){
-        boolean black = true;
-        boolean white = true;
-        for(int i = 0; i < 8;i++){
+    public int checkWin(){
+        boolean blackWin = true;
+        boolean whiteWin = true;
+        for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
-                if(("w".equals(board[i][j])) || ("wk".equals(board[i][j]))){
-                    black = false;
-                }
-                if(("b".equals(board[i][j])) || ("bk".equals(board[i][j]))){
-                    white = false;
-                }
+                String piece = board[i][j];
+                ArrayList<int[]> availableMoves;
+                if(piece != null) availableMoves = Vmoves(i, j);
+                else continue;
+                if(piece.contains("w") && !availableMoves.isEmpty()) blackWin = false;
+                else if (piece.contains("b") && !availableMoves.isEmpty()) whiteWin = false;
+                if(!blackWin && !whiteWin) return 0;
             }
         }
-        if(black){
-            return "b";
-        }else if(white){
-            return "w";
-        }else{
-            return "";
-        }
+        if(blackWin) return 1;
+        else return 2;
     }
 
     public String[][] getBoard() {

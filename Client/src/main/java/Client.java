@@ -109,4 +109,7 @@ public class Client extends Thread{
 		send(new Message("leave_lobby", uname, null, ""));
 	}
 
+	//Request a rematch
+	public void reqRematch(){send(new Message("rematch", uname, null, ""));}
+
 }

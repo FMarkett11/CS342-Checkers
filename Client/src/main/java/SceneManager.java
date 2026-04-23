@@ -232,6 +232,18 @@ public class SceneManager {
                 });
                 break;
 
+            //If a user requests a rematch begin the rematch.
+            case "rematch_start":
+                Platform.runLater(() -> {
+                    clientController.reset();
+                    clientController.setBoard(msg.board);
+                    clientController.initBoard();
+                    if(!GuiClient.clientConnection.isHost)
+                        clientController.setTurn(false);
+                    else
+                        clientController.setTurn(true);
+                });
+                break;
             //Highlight the valid moves just requested
             case "valid_moves":
                 Platform.runLater(() -> {
@@ -245,6 +257,12 @@ public class SceneManager {
                 Platform.runLater(() -> {
                     clientController.makeBoard(msg.board);
                     clientController.setTurn(msg.message.equals(GuiClient.clientConnection.uname));
+                });
+                break;
+            //If the game is finished
+            case "game_complete":
+                Platform.runLater(() -> {
+                    clientController.handleGameCompletion(msg.message);
                 });
                 break;
             //Fallback display message in chat if possible

@@ -38,6 +38,7 @@ public class Server{
 	private final Object matchLock = new Object();
 	//Stores whos turn it is
 	ConcurrentHashMap<User, String> turns = new ConcurrentHashMap<>();
+	Set<User> rematch = Collections.synchronizedSet(new HashSet<>());
 	
 	
 	Server(Consumer<Serializable> call){
@@ -446,53 +447,78 @@ public class Server{
 								//Send the valid moves back to the user
 								updateSingleClient(new Message("valid_moves", "server", data.sender, "", game, data.row, data.col, moves));
 							}
-
+							//
+							if(data.type.equals("rematch")){
+								callback.accept(data.sender + " has requested a rematch");
+								User sender = users.get(data.sender);
+								User host;
+								User joiner;
+								// If sender is a joiner get host
+								if (matchesj2h.containsKey(sender)) {
+									host = matchesj2h.get(sender);
+									joiner = sender;
+								} else {
+									// otherwise sender is the host
+									host = sender;
+									joiner = matchesh2j.get(sender);
+								}
+								rematch.add(sender);
+								 if (rematch.contains(host) && rematch.contains(joiner)){
+									callback.accept("Rematch accepted!");
+									rematch.remove(host);
+									rematch.remove(joiner);
+									boards.remove(host);
+									checkersBoard newBoard = new checkersBoard();
+									newBoard.populateBoard();
+									boards.put(host, newBoard);
+									turns.put(host, host.username);
+									Message rematchOn = new Message("rematch_start", "server", "both", "Rematch accepted!", boards.get(host).copy(), -1, -1, null);
+									rematchOn.recipient = joiner.username;
+									updateSingleClient(rematchOn);
+									rematchOn.recipient = host.username;
+									updateSingleClient(rematchOn);
+								}
+							}
 							//If the user requests to make a move
 							if(data.type.equals("make_move")){
 								callback.accept(data.sender + " is attempting to move");
 								//Get the board sent over
 								User sender = users.get(data.sender);
 								User host;
+								User joiner;
 								// If sender is a joiner get host
 								if (matchesj2h.containsKey(sender)) {
 									host = matchesj2h.get(sender);
+									joiner = sender;
 								} else {
 									// otherwise sender is the host
 									host = sender;
+									joiner = matchesh2j.get(sender);
 								}
 								checkersBoard game = boards.get(host);
 								String currentTurn = turns.get(host);
-
 								if (!data.sender.equals(currentTurn)) {
 									// Not this player's turn ignore
 									updateSingleClient(new Message("error", "server", data.sender, "Not your turn"));
 									return;
 								}
-
 								//Fetch the old row and column via the message
 								int oldrow = Integer.parseInt(data.message.substring(0, data.message.indexOf(",")));
 								int oldcol = Integer.parseInt(data.message.substring(data.message.indexOf(",") + 1));
 								//Get the valid moves for the piece trying to be moved
 								ArrayList<int[]> moves = game.Vmoves(oldrow, oldcol);
-
 								//Set isValid to be false by default
 								boolean isValid = false;
-
 								String piece = game.getBoard()[oldrow][oldcol];
-
 								if (piece == null) return;
-
 								// enforce ownership
 								boolean isWhite = piece.startsWith("w");
 								boolean isBlack = piece.startsWith("b");
-
 								boolean senderIsHost = sender.equals(host);
 								boolean senderIsJoiner = !senderIsHost;
-
 								// host = black, joiner = white
 								if (senderIsHost && !isBlack) return;
 								if (senderIsJoiner && !isWhite) return;
-
 								//Check to see if the updated move shows up in the valid moves. if it does have isValid be true and break
 								for(int[] i : moves){
 									if(i[0] == data.row && i[1] == data.col){
@@ -500,15 +526,12 @@ public class Server{
 										break;
 									}
 								}
-
 								//If the move isn't valid do nothing (might make send an error message later)
 								if(!isValid) {
 									return;
 								}
-
 								//Move the piece requested
 								game.move(data.row, data.col, oldrow, oldcol, game.getBoard()[oldrow][oldcol]);
-
 								//Get the user who sent the message
 								String player1 = data.sender;
 								User p1 = users.get(player1);
@@ -516,11 +539,8 @@ public class Server{
 								//Get the user who they are in a match with
 								if(matchesj2h.containsKey(p1)) player2 = matchesj2h.get(p1).username;
 								else player2 = matchesh2j.get(p1).username;
-
 								boolean jumped = Math.abs(data.row - oldrow) == 2;
-
 								String nextPlayer = data.sender;
-
 								// if NOT a jump switch turn
 								if (!jumped) {
 									if (data.sender.equals(host.username)) {
@@ -532,7 +552,6 @@ public class Server{
 								} else {
 									// check if more jumps exist if yes, SAME PLAYER continues
 									ArrayList<int[]> moreMoves = game.Vmoves(data.row, data.col);
-
 									boolean canJumpAgain = false;
 									for (int[] m : moreMoves) {
 										if (Math.abs(m[0] - data.row) == 2) {
@@ -540,7 +559,6 @@ public class Server{
 											break;
 										}
 									}
-
 									if (!canJumpAgain) {
 										// no more jumps → switch turn
 										if (data.sender.equals(host.username)) {
@@ -553,13 +571,31 @@ public class Server{
 								}
 								//Create the message which sends the updated board
 								Message newBoard = new Message("board_update", "server", player1 + " and " + player2, nextPlayer,  game.copy(), -1, -1, null);
-
 								//Send the updated board to both clients in a match
 								newBoard.recipient = player1;
 								updateSingleClient(newBoard);
 								newBoard.recipient = player2;
 								updateSingleClient(newBoard);
 								boards.put(host, game);
+								int winner = game.checkWin();
+								Message whoWon;
+								if (winner != 0){
+									if(winner == 1) {
+										whoWon = new Message("game_complete", "server", "both players", "black");
+										host.wins++;
+										joiner.losses++;
+										saveUsers();
+									} else{
+										whoWon = new Message("game_complete", "server", "both players", "white");
+										host.losses++;
+										joiner.wins++;
+										saveUsers();
+									}
+									whoWon.recipient = player1;
+									updateSingleClient(whoWon);
+									whoWon.recipient = player2;
+									updateSingleClient(whoWon);
+								}
 							}
 
 
@@ -613,6 +649,8 @@ public class Server{
 			private void cleanupMatch(User host, User joiner) {
 				//If the thrad holds the matchLock
 				synchronized (matchLock) {
+					rematch.remove(host);
+					rematch.remove(joiner);
 					//If the host is not null
 					if (host != null) {
 						//Remove the host from the current matches
