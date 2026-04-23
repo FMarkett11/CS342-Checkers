@@ -93,7 +93,7 @@ public class SceneManager {
     public static void handleMessage(Message msg) {
         //Depending on what the type of message is
         switch (msg.type) {
-            //On login success
+            //On login successc
             case "login_success":
                 //switch to selection scene
                 loadScene("selection.fxml");
@@ -180,6 +180,7 @@ public class SceneManager {
                         //Initialize the checkers board
                         clientController.setBoard(msg.board);
                         clientController.initBoard();
+                        clientController.setTurn(false);
                     });
                     //Otherwise
                 } else {
@@ -243,6 +244,7 @@ public class SceneManager {
             case "board_update":
                 Platform.runLater(() -> {
                     clientController.makeBoard(msg.board);
+                    clientController.setTurn(msg.message.equals(GuiClient.clientConnection.uname));
                 });
                 break;
             //Fallback display message in chat if possible

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 public class checkersBoard implements Serializable {
     static final long serialVersionUID = 38L;
     String[][] board = new String[8][8];
-    boolean Bsturn = false;//false means white turn. True means black turn.
 
 
     public void populateBoard() {
@@ -34,104 +33,72 @@ public class checkersBoard implements Serializable {
         }
     }
 
-    public ArrayList<int[]> Vmoves(int row, int col){//check for validmoves
+    public ArrayList<int[]> Vmoves(int row, int col){
+
+        //List to store all valid moves
         ArrayList<int[]> validMoves = new ArrayList<>();
-        String curpiece = board[row][col];
 
-        if(!Bsturn) {
-            if (curpiece.equals( "w")) {//handle white pieces
+        //Get the piece at the given position
+        String piece = board[row][col];
 
-                if ((row + 1 < 8 && col - 1 >= 0) && board[row + 1][col - 1] == null) {
-                    validMoves.add(new int[]{row + 1, col - 1});
-                }
-                if ((row + 1 < 8 && col + 1 < 8) && board[row + 1][col + 1] == null) {
-                    validMoves.add(new int[]{row + 1, col + 1});
-                }
-                if ((row + 2 < 8 && col - 2 >= 0) && "b".equals(board[row + 1][col - 1]) && board[row + 2][col - 2] == null) {
-                    validMoves.add(new int[]{row + 2, col - 2});
-                }
-                if ((row + 2 < 8 && col + 2 < 8) && "b".equals(board[row + 1][col + 1]) && board[row + 2][col + 2] == null) {
-                    validMoves.add(new int[]{row + 2, col + 2});
+        //If no piece exists return empty move list
+        if (piece == null) return validMoves;
+
+        //Determine piece type
+        boolean isWhite = piece.startsWith("w");
+        boolean isKing = piece.endsWith("k");
+
+        //Stores all possible movement directions
+        int[][] directions;
+
+        //If the piece is a king it can move in all diagonal directions
+        if (isKing) {
+            directions = new int[][]{{1,1},{1,-1},{-1,1},{-1,-1}};
+
+            //If the piece is white it moves "down" the board
+        } else if (isWhite) {
+            directions = new int[][]{{1,1},{1,-1}};
+
+            //Otherwise the piece is black and moves "up" the board
+        } else {
+            directions = new int[][]{{-1,1},{-1,-1}};
+        }
+
+        //Check each possible direction
+        for (int[] d : directions) {
+
+            //Row and column for a normal move (1 step away)
+            int r = row + d[0];
+            int c = col + d[1];
+
+            //If the square is within bounds and empty add as a valid normal move
+            if (inBounds(r,c) && board[r][c] == null) {
+                validMoves.add(new int[]{r,c});
+            }
+
+            //Row and column for a jump move (2 steps away)
+            int jr = row + 2 * d[0];
+            int jc = col + 2 * d[1];
+
+            //Check if jump destination is within bounds and empty
+            if (inBounds(jr,jc) && board[jr][jc] == null) {
+
+                //Get the piece in between (the one being jumped over)
+                String mid = board[r][c];
+
+                //If there is a piece and it belongs to the opponent allow jump
+                if (mid != null && !mid.substring(0,1).equals(piece.substring(0,1))) {
+                    validMoves.add(new int[]{jr,jc});
                 }
             }
         }
 
-        if(Bsturn) {
-            if (curpiece.equals("b")) {// handle black pieces
-                if ((row - 1 >= 0 && col - 1 >= 0) && board[row - 1][col - 1] == null) {
-                    validMoves.add(new int[]{row - 1, col - 1});
-                }
-                if ((row - 1 >= 0 && col + 1 < 8) && board[row - 1][col + 1] == null) {
-                    validMoves.add(new int[]{row - 1, col + 1});
-                }
-                if ((row - 2 >= 0 && col - 2 >= 0) && "w".equals(board[row - 1][col - 1]) && board[row - 2][col - 2] == null) {
-                    validMoves.add(new int[]{row - 2, col - 2});
-                }
-                if ((row - 2 >= 0 && col + 2 < 8) && "w".equals(board[row - 1][col + 1]) && board[row - 2][col + 2] == null) {
-                    validMoves.add(new int[]{row - 2, col + 2});
-                }
-            }
-        }
-
-        if(!Bsturn) {
-            if (curpiece.equals("wk")) {//handle wk
-                if ((row + 1 < 8 && col - 1 >= 0) && board[row + 1][col - 1] == null) {
-                    validMoves.add(new int[]{row + 1, col - 1});
-                }
-                if ((row + 1 < 8 && col + 1 < 8) && board[row + 1][col + 1] == null) {
-                    validMoves.add(new int[]{row + 1, col + 1});
-                }
-                if ((row + 2 < 8 && col - 2 >= 0) && "b".equals(board[row + 1][col - 1]) && board[row + 2][col - 2] == null) {
-                    validMoves.add(new int[]{row + 2, col - 2});
-                }
-                if ((row + 2 < 8 && col + 2 < 8) && "b".equals(board[row + 1][col + 1]) && board[row + 2][col + 2] == null) {
-                    validMoves.add(new int[]{row + 2, col + 2});
-                }
-                if ((row - 1 >= 0 && col - 1 >= 0) && board[row - 1][col - 1] == null) {
-                    validMoves.add(new int[]{row - 1, col - 1});
-                }
-                if ((row - 1 >= 0 && col + 1 < 8) && board[row - 1][col + 1] == null) {
-                    validMoves.add(new int[]{row - 1, col + 1});
-                }
-                if ((row - 2 >= 0 && col - 2 >= 0) && "b".equals(board[row - 1][col - 1]) && board[row - 2][col - 2] == null) {
-                    validMoves.add(new int[]{row - 2, col - 2});
-                }
-                if ((row - 2 >= 0 && col + 2 < 8) && "b".equals(board[row - 1][col + 1]) && board[row - 2][col + 2] == null) {
-                    validMoves.add(new int[]{row - 2, col + 2});
-                }
-
-            }
-        }
-
-        if(Bsturn) {
-            if (curpiece.equals("bk")) {//handle bk
-                if ((row + 1 < 8 && col - 1 >= 0) && board[row + 1][col - 1] == null) {
-                    validMoves.add(new int[]{row + 1, col - 1});
-                }
-                if ((row + 1 < 8 && col + 1 < 8) && board[row + 1][col + 1] == null) {
-                    validMoves.add(new int[]{row + 1, col + 1});
-                }
-                if ((row + 2 < 8 && col - 2 >= 0) && "w".equals(board[row + 1][col - 1]) && board[row + 2][col - 2] == null) {
-                    validMoves.add(new int[]{row + 2, col - 2});
-                }
-                if ((row + 2 < 8 && col + 2 < 8) && "w".equals(board[row + 1][col + 1]) && board[row + 2][col + 2] == null) {
-                    validMoves.add(new int[]{row + 2, col + 2});
-                }
-                if ((row - 1 >= 0 && col - 1 >= 0) && board[row - 1][col - 1] == null) {
-                    validMoves.add(new int[]{row - 1, col - 1});
-                }
-                if ((row - 1 >= 0 && col + 1 < 8) && board[row - 1][col + 1] == null) {
-                    validMoves.add(new int[]{row - 1, col + 1});
-                }
-                if ((row - 2 >= 0 && col - 2 >= 0) && "w".equals(board[row - 1][col - 1]) && board[row - 2][col - 2] == null) {
-                    validMoves.add(new int[]{row - 2, col - 2});
-                }
-                if ((row - 2 >= 0 && col + 2 < 8) && "w".equals(board[row - 1][col + 1]) && board[row - 2][col + 2] == null) {
-                    validMoves.add(new int[]{row - 2, col + 2});
-                }
-            }
-        }
+        //Return all valid moves found
         return validMoves;
+    }
+
+    private boolean inBounds(int r, int c){
+        return r >= 0 && r < 8 && c >= 0 && c < 8;
     }
 
     public void move(int row, int col, int startRow, int startCol, String piece){
@@ -142,12 +109,6 @@ public class checkersBoard implements Serializable {
         board[startRow][startCol] = null;
         if(Math.abs(row - startRow) == 2){
             board[(row + startRow)/2][(col + startCol)/2] = null;
-        }
-        if(Bsturn){
-            Bsturn = false;
-        }
-        else{
-            Bsturn = true;
         }
     }
 
@@ -185,8 +146,6 @@ public class checkersBoard implements Serializable {
                 newBoard.board[i][j] = this.board[i][j];
             }
         }
-
-        newBoard.Bsturn = this.Bsturn;
 
         return newBoard;
     }

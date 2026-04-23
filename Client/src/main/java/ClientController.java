@@ -21,7 +21,9 @@ public class ClientController {
     private Label dispMsg;
     @FXML
     private GridPane boardGrid;
+    private boolean isMyTurn = true;
     public checkersBoard board;
+    private ArrayList<int[]> currentValidMoves = new ArrayList<>();
 
     private Button[][] boardButtons = new Button[8][8]; //stores all the button on the gridpane
     private int[] selectedPiece = null;  // stores [row, col] of clicked piece
@@ -72,31 +74,82 @@ public class ClientController {
         refreshBoard();
     }
 
+    private boolean isMyPiece(int row, int col) {
+        String piece = board.getBoard()[row][col];
+
+        if (piece == null) return false;
+
+        // black player controls "b" and "bk"
+        if (GuiClient.clientConnection.isBlack) {
+            return piece.startsWith("b");
+        }
+
+        // white player controls "w" and "wk"
+        return piece.startsWith("w");
+    }
+
     private void handleSquareClick(int row, int col) {
 
+        //Do nothing if it is not this client's turn
+        if (!isMyTurn) return;
+
+        //Flip coordinates if the player is white (board is inverted visually)
         if (!GuiClient.clientConnection.isBlack) {
             row = 7 - row;
             col = 7 - col;
         }
-        //A piece is already selected then try to move
+
+        //If a piece is already selected attempt to move it
         if (selectedPiece != null) {
+
             int oldRow = selectedPiece[0];
             int oldCol = selectedPiece[1];
 
-            Message moveMsg = new Message("make_move", GuiClient.clientConnection.uname, "server", oldRow + "," + oldCol, row, col, null);
+            //Check if the clicked square is a valid move
+            boolean isValid = false;
+            for (int[] move : currentValidMoves) {
+                if (move[0] == row && move[1] == col) {
+                    isValid = true;
+                    break;
+                }
+            }
+
+            //If the move is not valid reset selection and stop
+            if (!isValid) {
+                selectedPiece = null;
+                currentValidMoves.clear();
+                clearHighlights();
+                return;
+            }
+
+            //Send the valid move to the server
+            Message moveMsg = new Message("make_move", GuiClient.clientConnection.uname, "server", oldRow + "," + oldCol, row, col, null
+            );
 
             GuiClient.clientConnection.send(moveMsg);
 
-            //If the move is invalid reset selection
+            //Reset selection after sending move
             selectedPiece = null;
+            currentValidMoves.clear();
             clearHighlights();
             return;
         }
 
-        //If theres no piece selected then select one
+        //If no piece is selected yet, ensure the clicked piece belongs to the player
+        if (!isMyPiece(row, col)) return;
+
+        //If the square contains a piece, select it and request valid moves
         if (board.board[row][col] != null) {
+
+            //Clear any previous highlights
+            clearHighlights();
+
+            //Store selected piece
             selectedPiece = new int[]{row, col};
-            Message req = new Message("request_moves", GuiClient.clientConnection.uname, "server", "", row, col, null);
+
+            //Request valid moves from the server
+            Message req = new Message("request_moves", GuiClient.clientConnection.uname, "server", "", row, col, null
+            );
 
             GuiClient.clientConnection.send(req);
         }
@@ -106,20 +159,37 @@ public class ClientController {
         selectedPiece = new int[]{row, col};
     }
 
+    /*
+    Highlights all valid moves on the board.
+
+    Also stores the valid moves locally so we can validate clicks client-side.
+*/
     public void highlightMoves(ArrayList<int[]> moves) {
+
+        //Store the moves so we can validate future clicks
+        currentValidMoves = moves;
         for (int[] move : moves) {
-            if(GuiClient.clientConnection.isBlack){
+            if (GuiClient.clientConnection.isBlack) {
                 boardButtons[move[0]][move[1]].setStyle("-fx-background-color: rgba(0,255,0,0.4);");
-            } else{
+            } else {
                 boardButtons[7 - move[0]][7 - move[1]].setStyle("-fx-background-color: rgba(0,255,0,0.4);");
             }
         }
     }
 
+    /*
+    Clears all highlighted squares on the board.
+    */
     private void clearHighlights() {
-        for (Button[] row : boardButtons)
-            for (Button btn : row)
+
+        for (Button[] row : boardButtons) {
+            for (Button btn : row) {
                 btn.setStyle("-fx-background-color: transparent;");
+            }
+        }
+
+        //Also clear stored valid moves
+        currentValidMoves.clear();
     }
 
     private void refreshBoard() {
@@ -213,6 +283,19 @@ public class ClientController {
 
     public void setBoard(checkersBoard newBoard){
         this.board = newBoard;
+    }
+
+    private void setBoardAble(boolean disabled) {
+        for (Button[] row : boardButtons) {
+            for (Button btn : row) {
+                btn.setDisable(disabled);
+            }
+        }
+    }
+
+    public void setTurn(boolean myTurn) {
+        this.isMyTurn = myTurn;
+        setBoardAble(!myTurn);
     }
 
     public void makeBoard(checkersBoard board){

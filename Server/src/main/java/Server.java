@@ -36,6 +36,8 @@ public class Server{
 	ConcurrentHashMap<User, User> matchesj2h = new ConcurrentHashMap<>();
 	//A lock which synchronizes anything that alters the three datatypes above
 	private final Object matchLock = new Object();
+	//Stores whos turn it is
+	ConcurrentHashMap<User, String> turns = new ConcurrentHashMap<>();
 	
 	
 	Server(Consumer<Serializable> call){
@@ -111,6 +113,7 @@ public class Server{
 			ObjectOutputStream out;
 			//This client's username
 			String uname;
+			//Determines what color piece the client is
 
 			//Constructor
 			ClientThread(Socket s, int count){
@@ -458,6 +461,13 @@ public class Server{
 									host = sender;
 								}
 								checkersBoard game = boards.get(host);
+								String currentTurn = turns.get(host);
+
+								if (!data.sender.equals(currentTurn)) {
+									// Not this player's turn ignore
+									updateSingleClient(new Message("error", "server", data.sender, "Not your turn"));
+									return;
+								}
 
 								//Fetch the old row and column via the message
 								int oldrow = Integer.parseInt(data.message.substring(0, data.message.indexOf(",")));
@@ -467,6 +477,21 @@ public class Server{
 
 								//Set isValid to be false by default
 								boolean isValid = false;
+
+								String piece = game.getBoard()[oldrow][oldcol];
+
+								if (piece == null) return;
+
+								// enforce ownership
+								boolean isWhite = piece.startsWith("w");
+								boolean isBlack = piece.startsWith("b");
+
+								boolean senderIsHost = sender.equals(host);
+								boolean senderIsJoiner = !senderIsHost;
+
+								// host = black, joiner = white
+								if (senderIsHost && !isBlack) return;
+								if (senderIsJoiner && !isWhite) return;
 
 								//Check to see if the updated move shows up in the valid moves. if it does have isValid be true and break
 								for(int[] i : moves){
@@ -492,8 +517,42 @@ public class Server{
 								if(matchesj2h.containsKey(p1)) player2 = matchesj2h.get(p1).username;
 								else player2 = matchesh2j.get(p1).username;
 
+								boolean jumped = Math.abs(data.row - oldrow) == 2;
+
+								String nextPlayer = data.sender;
+
+								// if NOT a jump switch turn
+								if (!jumped) {
+									if (data.sender.equals(host.username)) {
+										nextPlayer = matchesh2j.get(host).username;
+									} else {
+										nextPlayer = host.username;
+									}
+									turns.put(host, nextPlayer);
+								} else {
+									// check if more jumps exist if yes, SAME PLAYER continues
+									ArrayList<int[]> moreMoves = game.Vmoves(data.row, data.col);
+
+									boolean canJumpAgain = false;
+									for (int[] m : moreMoves) {
+										if (Math.abs(m[0] - data.row) == 2) {
+											canJumpAgain = true;
+											break;
+										}
+									}
+
+									if (!canJumpAgain) {
+										// no more jumps → switch turn
+										if (data.sender.equals(host.username)) {
+											nextPlayer = matchesh2j.get(host).username;
+										} else {
+											nextPlayer = host.username;
+										}
+										turns.put(host, nextPlayer);
+									}
+								}
 								//Create the message which sends the updated board
-								Message newBoard = new Message("board_update", "server", player1 + " and " + player2,"",  game.copy(), -1, -1, null);
+								Message newBoard = new Message("board_update", "server", player1 + " and " + player2, nextPlayer,  game.copy(), -1, -1, null);
 
 								//Send the updated board to both clients in a match
 								newBoard.recipient = player1;
@@ -562,6 +621,7 @@ public class Server{
 						boards.remove(host);
 						//Add the host back to the host list
 						hosts.add(host);
+						turns.remove(host);
 					}
 					//If the joiner is not null
 					if (joiner != null) {
@@ -587,6 +647,8 @@ public class Server{
 					matchesj2h.put(joiner, host);
 					// Remove host from available pool
 					hosts.remove(host);
+					//host always starts
+					turns.put(host, host.username);
 				}
 				// Notify both players
 				updateSingleClient(new Message("match_created", "server", joiner.toString(), "You have successfully joined " + host, boards.get(host), -1, -1, null));
