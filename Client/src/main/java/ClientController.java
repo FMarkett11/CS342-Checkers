@@ -31,7 +31,6 @@ public class ClientController {
         layout for how to handle pending messages.
     */
     public void initialize() {
-        //todo should be equal to the board sent by the server
         connectedClients.getItems().add("ALL");
         //Set the current selection to be ALL
         connectedClients.setValue("ALL");
@@ -75,9 +74,12 @@ public class ClientController {
 
     private void handleSquareClick(int row, int col) {
 
+        if (!GuiClient.clientConnection.isBlack) {
+            row = 7 - row;
+            col = 7 - col;
+        }
         //A piece is already selected then try to move
         if (selectedPiece != null) {
-
             int oldRow = selectedPiece[0];
             int oldCol = selectedPiece[1];
 
@@ -106,7 +108,11 @@ public class ClientController {
 
     public void highlightMoves(ArrayList<int[]> moves) {
         for (int[] move : moves) {
-            boardButtons[move[0]][move[1]].setStyle("-fx-background-color: rgba(0,255,0,0.4);");
+            if(GuiClient.clientConnection.isBlack){
+                boardButtons[move[0]][move[1]].setStyle("-fx-background-color: rgba(0,255,0,0.4);");
+            } else{
+                boardButtons[7 - move[0]][7 - move[1]].setStyle("-fx-background-color: rgba(0,255,0,0.4);");
+            }
         }
     }
 
@@ -122,23 +128,31 @@ public class ClientController {
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
 
+                int displayRow = r;
+                int displayCol = c;
+
+                if (!GuiClient.clientConnection.isBlack) {
+                    displayRow = 7 - r;
+                    displayCol = 7 - c;
+                }
+
                 Button btn = boardButtons[r][c];
 
                 btn.setGraphic(null);
                 btn.setText("");
                 btn.setStyle("-fx-background-color: transparent;");
 
-                if (grid[r][c] != null) {
-                    Image img = new Image("Images/" + grid[r][c] + ".png");
+                if (grid[displayRow][displayCol] != null) {
+                    Image img = new Image("Images/" + grid[displayRow][displayCol] + ".png");
                     ImageView imageView = new ImageView(img);
                     imageView.setFitWidth(30);
                     imageView.setFitHeight(30);
 
-                    btn.setGraphic(null);
                     btn.setGraphic(imageView);
                 }
             }
         }
+
         boardGrid.requestLayout();
         boardGrid.layout();
     }

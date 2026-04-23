@@ -507,7 +507,7 @@ public class Server{
 						}
 						catch(Exception e) {
 							//uncomment for debugging
-							e.printStackTrace();
+							//e.printStackTrace();
 							//Print to the log that something went wrong and that their socket is closing down
 							callback.accept("Something wrong with the socket from client: " + count + "....closing down!");
 							//Get the user attached to the user thats disconnecting
