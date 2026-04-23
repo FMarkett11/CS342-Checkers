@@ -21,12 +21,11 @@ public class Message implements Serializable {
         message = str;
     }
 
-    public Message(String type, String sender, String recipient, String str, boolean myTurn, checkersBoard board, int row, int col, ArrayList<int[]> validMoves){
+    public Message(String type, String sender, String recipient, String str, int row, int col, ArrayList<int[]> validMoves){
         this.type = type;
         this.sender = sender;
         this.recipient = recipient;
         message = str;
-        this.board = board;
         this.row = row;
         this.col = col;
         this.validMoves = validMoves;

@@ -17,6 +17,8 @@ public class Client extends Thread{
 
 	boolean isHost = false;
 
+	boolean isBlack;
+
 	public String uname;
 
 	private Consumer<Serializable> callback;

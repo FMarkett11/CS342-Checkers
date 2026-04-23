@@ -26,6 +26,8 @@ public class Server{
 	//A thread safe hashmap that stores a groupname and the usernames of members in that group
 	//(Currently unused)
 	ConcurrentHashMap<String, ArrayList<String>> groups = new ConcurrentHashMap<>();
+	//A Hashmap that stores a gameboard in relation to a host
+	ConcurrentHashMap<User, checkersBoard> boards = new ConcurrentHashMap<>();
 	//A thread safe set that stores the current hosts
 	Set<User> hosts = Collections.synchronizedSet(new HashSet<>());
 	//A thread safe hashmap that stores a match with a host -> a user who joined the host
@@ -314,12 +316,18 @@ public class Server{
 								callback.accept(data.sender + " is hosting a lobby");
 								//If the user holds the lock
 								synchronized (matchLock){
+									//Get the host
+									User host = users.get(data.sender);
 									//Add the user to the list of hosts
-									hosts.add(users.get(data.sender));
+									hosts.add(host);
 									//Send the list of hosts to every client
 									updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
 									//Tell the person who tried to host that they have started hosting
 									updateSingleClient(new Message("hosting_started", "server", data.sender, ""));
+									//Create a new checkersboard for the host.
+									checkersBoard newBoard = new checkersBoard();
+									newBoard.populateBoard();
+									boards.put(host, newBoard);
 								}
 							}
 
@@ -410,7 +418,7 @@ public class Server{
 							//If the user is requesting the host list
 							if(data.type.equals("request_host_list")){
 								//Print to the log that the user is requesting the host list
-								callback.accept(data.sender + " has requested the host list");
+								callback.accept(data.sender + " has requested the host list of " + hosts.toString().substring(1, hosts.toString().length() - 1));
 								//Send the host list to the user that requested it
 								updateSingleClient(new Message("host_list", "server", data.sender, hosts.toString().substring(1, hosts.toString().length() - 1)));
 							}
@@ -418,7 +426,16 @@ public class Server{
 							//If the user wants to see correct moves for a specific piece
 							if(data.type.equals("request_moves")){
 								//Fetch the current board
-								checkersBoard game = data.board;
+								User sender = users.get(data.sender);
+								User host;
+
+								if (matchesj2h.containsKey(sender)) {
+									host = matchesj2h.get(sender);
+								} else {
+									host = sender;
+								}
+
+								checkersBoard game = boards.get(host);
 
 								//Get the valid moves for the piece given
 								ArrayList<int[]> moves = game.Vmoves(data.row, data.col);
@@ -429,12 +446,22 @@ public class Server{
 
 							//If the user requests to make a move
 							if(data.type.equals("make_move")){
+								callback.accept(data.sender + " is attempting to move");
 								//Get the board sent over
-								checkersBoard game = data.board;
+								User sender = users.get(data.sender);
+								User host;
+								// If sender is a joiner get host
+								if (matchesj2h.containsKey(sender)) {
+									host = matchesj2h.get(sender);
+								} else {
+									// otherwise sender is the host
+									host = sender;
+								}
+								checkersBoard game = boards.get(host);
 
 								//Fetch the old row and column via the message
 								int oldrow = Integer.parseInt(data.message.substring(0, data.message.indexOf(",")));
-								int oldcol = Integer.parseInt(data.message.substring(data.message.indexOf(","), data.message.indexOf(",")));
+								int oldcol = Integer.parseInt(data.message.substring(data.message.indexOf(",") + 1));
 								//Get the valid moves for the piece trying to be moved
 								ArrayList<int[]> moves = game.Vmoves(oldrow, oldcol);
 
@@ -450,7 +477,9 @@ public class Server{
 								}
 
 								//If the move isn't valid do nothing (might make send an error message later)
-								if(!isValid) return;
+								if(!isValid) {
+									return;
+								}
 
 								//Move the piece requested
 								game.move(data.row, data.col, oldrow, oldcol, game.getBoard()[oldrow][oldcol]);
@@ -464,20 +493,21 @@ public class Server{
 								else player2 = matchesh2j.get(p1).username;
 
 								//Create the message which sends the updated board
-								Message newBoard = new Message("board_update", "server", player1 + " and " + player2,"",  game, -1, -1, null);
+								Message newBoard = new Message("board_update", "server", player1 + " and " + player2,"",  game.copy(), -1, -1, null);
 
 								//Send the updated board to both clients in a match
 								newBoard.recipient = player1;
 								updateSingleClient(newBoard);
 								newBoard.recipient = player2;
 								updateSingleClient(newBoard);
+								boards.put(host, game);
 							}
 
 
 						}
 						catch(Exception e) {
 							//uncomment for debugging
-							//e.printstacktrace()
+							e.printStackTrace();
 							//Print to the log that something went wrong and that their socket is closing down
 							callback.accept("Something wrong with the socket from client: " + count + "....closing down!");
 							//Get the user attached to the user thats disconnecting
@@ -495,7 +525,7 @@ public class Server{
 										//Cleanup the match (SEE clearnupMatch() for more info)
 										cleanupMatch(host, disconnectingUser);
 									}
-									// If user is a host, get the joiner associated to the hsot
+									// If user is a host, get the joiner associated to the host
 									User joiner = matchesh2j.get(disconnectingUser);
 									//If the joiner is not null
 									if (joiner != null) {
@@ -503,6 +533,11 @@ public class Server{
 										updateSingleClient(new Message("leave_lobby", "server", joiner.toString(), this.uname + " has stopped hosting!"));
 										//CLean up the match (SEE clearnupMatch() for more info)
 										cleanupMatch(disconnectingUser, joiner);
+									}
+									if(hosts.contains(disconnectingUser)){
+										synchronized(matchLock){
+											hosts.remove(disconnectingUser);
+										}
 									}
 								}
 								loggedIn.remove(this.uname);
@@ -523,6 +558,8 @@ public class Server{
 					if (host != null) {
 						//Remove the host from the current matches
 						matchesh2j.remove(host);
+						//Remove the board from the list of boards
+						boards.remove(host);
 						//Add the host back to the host list
 						hosts.add(host);
 					}
@@ -552,14 +589,12 @@ public class Server{
 					hosts.remove(host);
 				}
 				// Notify both players
-				updateSingleClient(new Message("match_created", "server", joiner.toString(), "You have successfully joined " + host));
-
-				updateSingleClient(new Message("match_created", "server", host.toString(), joiner + " has joined your lobby."));
+				updateSingleClient(new Message("match_created", "server", joiner.toString(), "You have successfully joined " + host, boards.get(host), -1, -1, null));
+				updateSingleClient(new Message("match_created", "server", host.toString(), joiner + " has joined your lobby.", boards.get(host), -1, -1, null));
 
 				// Update host list for everyone
 				updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
 			}
-
 
 			
 		}//end of client thread

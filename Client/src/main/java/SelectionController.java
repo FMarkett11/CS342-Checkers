@@ -13,5 +13,6 @@ public class SelectionController {
     private void goHost(){
         GuiClient.clientConnection.createLobby();
         GuiClient.clientConnection.isHost = true;
+        GuiClient.clientConnection.isBlack = true;
     }
 }

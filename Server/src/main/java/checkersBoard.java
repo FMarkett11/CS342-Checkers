@@ -1,7 +1,9 @@
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class checkersBoard {
+public class checkersBoard implements Serializable {
+    static final long serialVersionUID = 38L;
     String[][] board = new String[8][8];
     boolean Bsturn = false;//false means white turn. True means black turn.
 
@@ -20,7 +22,7 @@ public class checkersBoard {
         }
 
 
-        for(int i = 5; i < 7; i++){//populate top half with (b)lack
+        for(int i = 5; i < 8; i++){//populate top half with (b)lack
             for(int j = 0 + k; j < 8; j+=2){
                 board[i][j] = "b";
             }
@@ -174,4 +176,19 @@ public class checkersBoard {
     public String[][] getBoard() {
         return board;
     }
+
+    public checkersBoard copy() {
+        checkersBoard newBoard = new checkersBoard();
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                newBoard.board[i][j] = this.board[i][j];
+            }
+        }
+
+        newBoard.Bsturn = this.Bsturn;
+
+        return newBoard;
+    }
+
 }

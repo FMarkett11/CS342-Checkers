@@ -21,7 +21,7 @@ public class ClientController {
     private Label dispMsg;
     @FXML
     private GridPane boardGrid;
-    checkersBoard board;
+    public checkersBoard board;
 
     private Button[][] boardButtons = new Button[8][8]; //stores all the button on the gridpane
     private int[] selectedPiece = null;  // stores [row, col] of clicked piece
@@ -31,10 +31,7 @@ public class ClientController {
         layout for how to handle pending messages.
     */
     public void initialize() {
-
-        board = new checkersBoard();//todo should be equal to the board sent by the server
-        board.populateBoard();
-        //Add the ALL option
+        //todo should be equal to the board sent by the server
         connectedClients.getItems().add("ALL");
         //Set the current selection to be ALL
         connectedClients.setValue("ALL");
@@ -63,7 +60,7 @@ public class ClientController {
         for (int row = 0; row < 8; row++) {//for every row
             for (int col = 0; col < 8; col++) { // for every column  make a new button and place it in the gridpane
                 Button btn = new Button();
-                btn.setPrefSize(47, 43); //makesure the button doesnt resize when image is loaded
+                btn.setPrefSize(47, 43); //make sure the button does not resize when image is loaded
                 btn.setMinSize(47, 43);
                 btn.setMaxSize(47, 43);
                 final int r = row, c = col;
@@ -76,35 +73,38 @@ public class ClientController {
         refreshBoard();
     }
 
-    //handle clicking a square on grid/board base case is select square if you select and click a valid move it will send to server
     private void handleSquareClick(int row, int col) {
 
-        if (selectedPiece != null) {//if you choose a piece get valid moves, make a move if valid and sent move to server.
-            ArrayList<int[]> validMoves = board.Vmoves(selectedPiece[0], selectedPiece[1]);
-            for (int[] move : validMoves) {
-                if (move[0] == row && move[1] == col) {//check for valid move
-                    String piece = board.board[selectedPiece[0]][selectedPiece[1]];
-                    board.move(row, col, selectedPiece[0], selectedPiece[1], piece);
-                    selectedPiece = null;
-                    clearHighlights();
-                    refreshBoard();
-                    // TODO: send move to server
-                    return;
-                }
-            }
-            // no valid moves dont do anything
+        //A piece is already selected then try to move
+        if (selectedPiece != null) {
+
+            int oldRow = selectedPiece[0];
+            int oldCol = selectedPiece[1];
+
+            Message moveMsg = new Message("make_move", GuiClient.clientConnection.uname, "server", oldRow + "," + oldCol, row, col, null);
+
+            GuiClient.clientConnection.send(moveMsg);
+
+            //If the move is invalid reset selection
             selectedPiece = null;
             clearHighlights();
+            return;
         }
 
-        //if you havent chose a piece yet base case
+        //If theres no piece selected then select one
         if (board.board[row][col] != null) {
             selectedPiece = new int[]{row, col};
-            highlightMoves(board.Vmoves(row, col));
+            Message req = new Message("request_moves", GuiClient.clientConnection.uname, "server", "", row, col, null);
+
+            GuiClient.clientConnection.send(req);
         }
     }
 
-    private void highlightMoves(ArrayList<int[]> moves) {
+    public void setSelectedPiece(int row, int col){
+        selectedPiece = new int[]{row, col};
+    }
+
+    public void highlightMoves(ArrayList<int[]> moves) {
         for (int[] move : moves) {
             boardButtons[move[0]][move[1]].setStyle("-fx-background-color: rgba(0,255,0,0.4);");
         }
@@ -119,24 +119,28 @@ public class ClientController {
     private void refreshBoard() {
         String[][] grid = board.getBoard();
 
-
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
+
+                Button btn = boardButtons[r][c];
+
+                btn.setGraphic(null);
+                btn.setText("");
+                btn.setStyle("-fx-background-color: transparent;");
+
                 if (grid[r][c] != null) {
-                    boardButtons[r][c].setText(grid[r][c]);
-                    if(grid[r][c].equals("w") || grid[r][c].equals("b")) {
-                        Image img = new Image("Images/" + grid[r][c] + ".png");
-                        ImageView imageView = new ImageView(img);
-                        imageView.setFitWidth(30);
-                        imageView.setFitHeight(30);
-                        boardButtons[r][c].setGraphic(imageView);
-                    }
-                } else {
-                    boardButtons[r][c].setGraphic(null);
-                    boardButtons[r][c].setText("");
+                    Image img = new Image("Images/" + grid[r][c] + ".png");
+                    ImageView imageView = new ImageView(img);
+                    imageView.setFitWidth(30);
+                    imageView.setFitHeight(30);
+
+                    btn.setGraphic(null);
+                    btn.setGraphic(imageView);
                 }
             }
         }
+        boardGrid.requestLayout();
+        boardGrid.layout();
     }
 
     //Hides the checkers board (TODO)
@@ -193,10 +197,14 @@ public class ClientController {
         SceneManager.loadScene("selection.fxml");
     }
 
-    //Hightlight the squares that are valid moves
-    public void showValidMoves(ArrayList<int[]> validMoves, int row, int col){}
+    public void setBoard(checkersBoard newBoard){
+        this.board = newBoard;
+    }
 
-    //Display the board to the user
-    public void makeBoard(checkersBoard board){}
+    public void makeBoard(checkersBoard board){
+        setBoard(board);
+        refreshBoard();
+    }
+
 
 }

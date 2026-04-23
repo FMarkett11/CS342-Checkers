@@ -178,12 +178,14 @@ public class SceneManager {
                     Platform.runLater(() -> {
                         loadScene("client.fxml");
                         //Initialize the checkers board
+                        clientController.setBoard(msg.board);
                         clientController.initBoard();
                     });
                     //Otherwise
                 } else {
                     //Just initialize the board
                     Platform.runLater(() -> {
+                        clientController.setBoard(msg.board);
                         clientController.initBoard();
                     });
                 }
@@ -226,18 +228,22 @@ public class SceneManager {
                     loadScene("client.fxml");
                     //Display that you are now awaiting a user
                     clientController.displayText("Awaiting user...");
-                    clientController.initBoard();// todo add somewhere where it makes more sense
                 });
                 break;
 
             //Highlight the valid moves just requested
             case "valid_moves":
-                clientController.showValidMoves(msg.validMoves, msg.row, msg.col);
+                Platform.runLater(() -> {
+                    clientController.highlightMoves(msg.validMoves);
+                    clientController.setSelectedPiece(msg.row, msg.col);
+                });
                 break;
 
             //Display the updated board to the client
             case "board_update":
-                clientController.makeBoard(msg.board);
+                Platform.runLater(() -> {
+                    clientController.makeBoard(msg.board);
+                });
                 break;
             //Fallback display message in chat if possible
             default:
@@ -268,6 +274,7 @@ public class SceneManager {
                 if (joinController != null) {
                     //Update the host list
                     Platform.runLater(() -> {
+                        if(joinController == null) {return;}
                         joinController.updateHosts(msg);
                     });
                 }
