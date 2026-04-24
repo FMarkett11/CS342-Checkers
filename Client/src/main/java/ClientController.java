@@ -354,7 +354,8 @@ public class ClientController {
 
     public void handleGameCompletion(String winner){
         overlay.setMouseTransparent(false);
-        if(winner.equals("black") && GuiClient.clientConnection.isBlack) winlose.setText("You Win!");
+        if(winner.equals("draw")) winlose.setText("Draw");
+        else if(winner.equals("black") && GuiClient.clientConnection.isBlack) winlose.setText("You Win!");
         else if(winner.equals("white") && !GuiClient.clientConnection.isBlack) winlose.setText("You Win!");
         else winlose.setText("You Lose");
         overlay.setVisible(true);
@@ -368,10 +369,19 @@ public class ClientController {
 
     @FXML
     private void rematch(){
+        myuname.setVisible(false);
+        oppuname.setVisible(false);
+        mystats.setVisible(false);
+        oppstats.setVisible(false);
         overlay.setVisible(false);
         overlay.setMouseTransparent(true);
         dispMsg.setVisible(true);
         GuiClient.clientConnection.reqRematch();
+    }
+
+    @FXML
+    private void reqDraw(){
+        GuiClient.clientConnection.reqDraw();
     }
 
     public void makeBoard(checkersBoard board){

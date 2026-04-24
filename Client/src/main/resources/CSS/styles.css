@@ -79,6 +79,21 @@
     -fx-background-color: linear-gradient(to bottom right, #1e1e24, #000000);
 }
 
+.tiny-other-primary-button {
+    -fx-background-color: #3b8132;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+
+    -fx-background-radius: 10px;
+    -fx-pref-height: 20px;
+
+    -fx-effect: dropshadow(gaussian, black, 3, 0.4, 0, 1);
+}
+
+.tiny-other-primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #46923c, #3b8132);
+}
+
 .primary-button:hover {
     -fx-background-color: linear-gradient(to bottom right, #ff5555, #c0392b);
 }

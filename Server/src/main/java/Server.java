@@ -39,6 +39,7 @@ public class Server{
 	//Stores whos turn it is
 	ConcurrentHashMap<User, String> turns = new ConcurrentHashMap<>();
 	Set<User> rematch = Collections.synchronizedSet(new HashSet<>());
+	Set<User> draw = Collections.synchronizedSet(new HashSet<>());
 	
 	
 	Server(Consumer<Serializable> call){
@@ -370,6 +371,7 @@ public class Server{
 										//Cleanup the match between the host and joiner (SEE clearnupMatch() for more info)
 										joiner.wins++;
 										host.losses++;
+										saveUsers();
 										cleanupMatch(host, joiner);
 									}
 									hosts.remove(host);
@@ -378,6 +380,34 @@ public class Server{
 								}
 							}
 
+							if(data.type.equals("request_draw")){
+								callback.accept(data.sender + " has requested a draw");
+								User sender = users.get(data.sender);
+								User host;
+								User joiner;
+								// If sender is a joiner get host
+								if (matchesj2h.containsKey(sender)) {
+									host = matchesj2h.get(sender);
+									joiner = sender;
+								} else {
+									// otherwise sender is the host
+									host = sender;
+									joiner = matchesh2j.get(sender);
+								}
+								draw.add(sender);
+								updateSingleClient(new Message("ind_message", "server", host.username, sender.username + " has requested a draw."), joiner.username);
+								if (draw.contains(host) && draw.contains(joiner)){
+									callback.accept("Draw accepted for " + joiner.username + " and " + host.username);
+									joiner.draws++;
+									host.draws++;
+									saveUsers();
+									Message draw = new Message("game_complete", "server", "both players", "draw");
+									draw.recipient = host.username;
+									updateSingleClient(draw);
+									draw.recipient = joiner.username;
+									updateSingleClient(draw);
+								}
+							}
 							//If the user requests to leave a lobby
 							if(data.type.equals("leave_lobby")){
 								//Set the joiner to be the user attached to the username sent in
@@ -397,6 +427,7 @@ public class Server{
 
 									host.wins++;
 									joiner.losses++;
+									saveUsers();
 
 									//Tell the client to leave the lobby
 									updateSingleClient(new Message("leave_lobby", "server", host.toString(), data.sender + " has left your lobby!"));
@@ -486,7 +517,7 @@ public class Server{
 								}
 								rematch.add(sender);
 								 if (rematch.contains(host) && rematch.contains(joiner)){
-									callback.accept("Rematch accepted!");
+									callback.accept("Rematch accepted! " + host.username + " and " + joiner.username);
 									rematch.remove(host);
 									rematch.remove(joiner);
 									boards.remove(host);
@@ -499,6 +530,12 @@ public class Server{
 									updateSingleClient(rematchOn);
 									rematchOn.recipient = host.username;
 									updateSingleClient(rematchOn);
+									String hostStats = host.username + "|" + host.wins + "W-" + host.losses + "L-" + host.draws + "D";
+									String joinerStats = joiner.username + "|" + joiner.wins + "W-" + joiner.losses + "L-" + joiner.draws + "D";
+									updateSingleClient(new Message("my_stats", "server", joiner.toString(), joinerStats, boards.get(host), -1, -1, null));
+									updateSingleClient(new Message("my_stats", "server", host.toString(), hostStats, boards.get(host), -1, -1, null));
+									updateSingleClient(new Message("opponent_stats", "server", joiner.toString(), hostStats, boards.get(host), -1, -1, null));
+									updateSingleClient(new Message("opponent_stats", "server", host.toString(), joinerStats, boards.get(host), -1, -1, null));
 								}
 							}
 							//If the user requests to make a move

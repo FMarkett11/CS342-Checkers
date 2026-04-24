@@ -33,6 +33,17 @@
                     </GridPane>
                 </children>
             </Pane>
+            <HBox layoutX="17.0" layoutY="74.0" prefHeight="40.0" prefWidth="410.0" spacing="10.0">
+                <VBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="407.0" spacing="2.0" HBox.hgrow="ALWAYS">
+                    <Label fx:id="myuname" alignment="CENTER_LEFT" maxWidth="Infinity" prefHeight="23.0" prefWidth="405.0" styleClass="UserLabel" />
+                    <Label fx:id="mystats" alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="UserStatsLabel" />
+                </VBox>
+                <VBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="395.0" spacing="2.0" HBox.hgrow="ALWAYS">
+                    <Label fx:id="oppuname" alignment="CENTER_RIGHT" maxWidth="Infinity" styleClass="UserLabel" />
+                    <Label fx:id="oppstats" alignment="CENTER_RIGHT" maxWidth="Infinity" styleClass="UserStatsLabel" />
+                </VBox>
+            </HBox>
+         <Button layoutX="321.0" layoutY="19.0" mnemonicParsing="false" onAction="#reqDraw" prefHeight="23.0" prefWidth="104.0" styleClass="tiny-other-primary-button" text="Request Draw" />
             <StackPane fx:id="overlay" mouseTransparent="true" prefHeight="494.0" prefWidth="641.0" style="-fx-background-color: rgba(0,0,0,0.8);" visible="false">
                 <VBox fx:id="Rematch" alignment="CENTER" maxWidth="657.0" prefHeight="494.0" prefWidth="657.0" spacing="40">
                     <Label fx:id="winlose" styleClass="LoginLabel" text="You Win!" />
@@ -44,16 +55,6 @@
                     </HBox>
                 </VBox>
             </StackPane>
-            <HBox layoutX="13.0" layoutY="74.0" prefHeight="40.0" prefWidth="414.0" spacing="10.0">
-                <VBox alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
-                    <Label fx:id="myuname" alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="UserLabel" />
-                    <Label fx:id="mystats" alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="UserStatsLabel" />
-                </VBox>
-                <VBox alignment="CENTER_RIGHT" spacing="2.0" HBox.hgrow="ALWAYS">
-                    <Label fx:id="oppuname" alignment="CENTER_RIGHT" maxWidth="Infinity" styleClass="UserLabel" />
-                    <Label fx:id="oppstats" alignment="CENTER_RIGHT" maxWidth="Infinity" styleClass="UserStatsLabel" />
-                </VBox>
-            </HBox>
         </children>
     </AnchorPane>
 </StackPane>

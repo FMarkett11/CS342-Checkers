@@ -206,6 +206,11 @@ public class SceneManager {
                     });
                 }
                 break;
+            case "my_stats":
+                Platform.runLater(() -> {
+                    clientController.setMyLabel(msg.message);
+                });
+                break;
             case "opponent_stats":
                 Platform.runLater(() -> {
                     clientController.setOppLabel(msg.message);
