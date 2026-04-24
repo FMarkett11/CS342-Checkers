@@ -361,7 +361,6 @@ public class Server{
 								//If the user holds the matchmaking lock
 								synchronized(matchLock){
 									//Remove the user from the list of hosts
-									hosts.remove(host);
 									//Get the person who was in the host's lobby
 									User joiner = matchesh2j.get(host);
 									//If this joiner exists
@@ -371,6 +370,7 @@ public class Server{
 										//Cleanup the match between the host and joiner (SEE clearnupMatch() for more info)
 										cleanupMatch(host, joiner);
 									}
+									hosts.remove(host);
 									//Send the new host list to every client
 									updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));
 								}

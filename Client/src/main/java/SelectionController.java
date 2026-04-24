@@ -1,6 +1,10 @@
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
 public class SelectionController {
+    @FXML
+    private Label errorlbl;
+
     public void initialize(){
 
     }
@@ -14,5 +18,15 @@ public class SelectionController {
         GuiClient.clientConnection.createLobby();
         GuiClient.clientConnection.isHost = true;
         GuiClient.clientConnection.isBlack = true;
+    }
+
+    public void changeLbl(String msg){
+        errorlbl.setVisible(true);
+        errorlbl.setText(msg);
+    }
+
+    public void noLabel(){
+        errorlbl.setText("");
+        errorlbl.setVisible(false);
     }
 }

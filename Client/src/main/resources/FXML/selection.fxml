@@ -10,6 +10,7 @@
 
             <Rectangle height="80" layoutX="-20" layoutY="0" styleClass="accent-rect-top" width="700" />
             <Rectangle height="80.0" layoutX="-20.0" layoutY="301.0" styleClass="accent-rect-bottom" width="700" />
+         <Label fx:id="errorlbl" layoutY="5.0" prefHeight="70.0" prefWidth="680.0" styleClass="ErrorLabel" visible="false"/>
 
         </children>
     </AnchorPane>

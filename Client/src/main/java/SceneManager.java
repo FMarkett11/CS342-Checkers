@@ -17,6 +17,7 @@ public class SceneManager {
     public static AccountCreator accountController;
     public static JoinController joinController;
     public static UsernameController usernameController;
+    public static SelectionController selectionController;
 
     //Buffer to hold messages that arrive before the correct scene is loaded
     private static final List<Message> pendingMessages = new ArrayList<>();
@@ -47,6 +48,10 @@ public class SceneManager {
             switch (fxml) {
                 //If the loaded scene is the client.fxml
                 case "client.fxml":
+                    //Make error label empty
+                    if(selectionController != null){
+                        selectionController.noLabel();
+                    }
                     //Set the clientController object to be the current controller
                     clientController = loader.getController();
                     break;
@@ -54,6 +59,10 @@ public class SceneManager {
                 case "accountcreation.fxml":
                     //Set the accountController object to be the current controller
                     accountController = loader.getController();
+                    break;
+                //If the loaded scene is selection
+                case "selection.fxml":
+                    selectionController = loader.getController();
                     break;
                 //If the loaded scene is username.fxml
                 case "username.fxml":
@@ -64,6 +73,10 @@ public class SceneManager {
                 case "joingame.fxml":
                     //Set the joinGame controller to be the current controller
                     joinController = loader.getController();
+                    //Make error label empty
+                    if(selectionController != null){
+                        selectionController.noLabel();
+                    }
                     //Get the current list of hosts from the server
                     GuiClient.clientConnection.send(new Message("request_host_list", GuiClient.clientConnection.uname, "server", "please..."));
 
@@ -206,6 +219,8 @@ public class SceneManager {
                        if(!GuiClient.clientConnection.isHost){
                            //Load the selection scene
                            SceneManager.loadScene("selection.fxml");
+                           //Set label to say host stopped hosting
+                           selectionController.changeLbl(msg.message);
                            //Clear all pending messages
                            clearPendingMessages();
                            //Make the client no longer a host
