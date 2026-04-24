@@ -43,7 +43,7 @@
                     <Label fx:id="oppstats" alignment="CENTER_RIGHT" maxWidth="Infinity" styleClass="UserStatsLabel" />
                 </VBox>
             </HBox>
-         <Button layoutX="321.0" layoutY="19.0" mnemonicParsing="false" onAction="#reqDraw" prefHeight="23.0" prefWidth="104.0" styleClass="tiny-other-primary-button" text="Request Draw" />
+         <Button fx:id="drawbut" layoutX="321.0" layoutY="19.0" mnemonicParsing="false" onAction="#reqDraw" prefHeight="23.0" prefWidth="104.0" styleClass="tiny-other-primary-button" text="Request Draw" visible="false" />
             <StackPane fx:id="overlay" mouseTransparent="true" prefHeight="494.0" prefWidth="641.0" style="-fx-background-color: rgba(0,0,0,0.8);" visible="false">
                 <VBox fx:id="Rematch" alignment="CENTER" maxWidth="657.0" prefHeight="494.0" prefWidth="657.0" spacing="40">
                     <Label fx:id="winlose" styleClass="LoginLabel" text="You Win!" />

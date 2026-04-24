@@ -29,6 +29,8 @@ public class ClientController {
     private GridPane boardGrid;
     @FXML
     private VBox Rematch;
+    @FXML
+    private Button drawbut;
     private boolean isMyTurn = true;
     public checkersBoard board;
     private ArrayList<int[]> currentValidMoves = new ArrayList<>();
@@ -72,6 +74,7 @@ public class ClientController {
     public void initBoard(){
         //Make the display text invisible
         dispMsg.setVisible(false);
+        drawbut.setVisible(true);
 
         boardGrid.getChildren().clear();
 
@@ -420,6 +423,7 @@ public class ClientController {
             startBotGame(isBotHard);
             return;
         }
+        drawbut.setVisible(false);
         myuname.setVisible(false);
         oppuname.setVisible(false);
         mystats.setVisible(false);

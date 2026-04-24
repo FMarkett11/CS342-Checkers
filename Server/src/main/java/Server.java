@@ -394,18 +394,25 @@ public class Server{
 									host = sender;
 									joiner = matchesh2j.get(sender);
 								}
-								draw.add(sender);
-								updateSingleClient(new Message("ind_message", "server", host.username, sender.username + " has requested a draw."), joiner.username);
+								if(draw.contains(sender)){
+									draw.remove(sender);
+									updateSingleClient(new Message("ind_message", "server", host.username, sender.username + " has revoked draw request."), joiner.username);
+								} else{
+									draw.add(sender);
+									updateSingleClient(new Message("ind_message", "server", host.username, sender.username + " has requested a draw."), joiner.username);
+								}
 								if (draw.contains(host) && draw.contains(joiner)){
 									callback.accept("Draw accepted for " + joiner.username + " and " + host.username);
 									joiner.draws++;
 									host.draws++;
 									saveUsers();
-									Message draw = new Message("game_complete", "server", "both players", "draw");
-									draw.recipient = host.username;
-									updateSingleClient(draw);
-									draw.recipient = joiner.username;
-									updateSingleClient(draw);
+									Message drawmsg = new Message("game_complete", "server", "both players", "draw");
+									drawmsg.recipient = host.username;
+									updateSingleClient(drawmsg);
+									drawmsg.recipient = joiner.username;
+									updateSingleClient(drawmsg);
+									draw.remove(joiner);
+									draw.remove(host);
 								}
 							}
 							//If the user requests to leave a lobby

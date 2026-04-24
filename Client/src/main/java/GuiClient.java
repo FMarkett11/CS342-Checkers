@@ -24,7 +24,7 @@ public class GuiClient extends Application {
 
 		SceneManager.loadScene("username.fxml");
 
-		primaryStage.setTitle("Client");
+		primaryStage.setTitle("Checkers");
 		primaryStage.setOnCloseRequest((WindowEvent t) -> {
 			Platform.exit();
 			System.exit(0);
