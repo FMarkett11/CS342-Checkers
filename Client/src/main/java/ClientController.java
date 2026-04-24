@@ -16,13 +16,13 @@ public class ClientController {
     @FXML
     private Label winlose;
     @FXML
-    private TextField messageField;
+    private TextField messageField, soloMessageField;
     @FXML
     private ComboBox<String> connectedClients;
     @FXML
     private ComboBox<String> groups;
     @FXML
-    private ListView<String> chatList;
+    private ListView<String> chatList, soloChatList;
     @FXML
     private Label dispMsg;
     @FXML
@@ -248,6 +248,11 @@ public class ClientController {
         chatList.getItems().add(msg);
     }
 
+    //Adds a message to the chat
+    public void addIndMessage(String msg) {
+        soloChatList.getItems().add(msg);
+    }
+
     //Adds a user to the combo box of users
     public void addUser(String user) {
         connectedClients.getItems().add(user);
@@ -280,6 +285,26 @@ public class ClientController {
     //Sends a message to the server requesting to send a chat
     public void sendChat(){
         GuiClient.clientConnection.sendChat(messageField.getText(), connectedClients.getValue());
+    }
+
+    public void sendSoloChat(){
+        GuiClient.clientConnection.sendSoloChat(soloMessageField.getText());
+    }
+
+    public void switchChat(){
+        if(soloChatList.isVisible()){
+            soloChatList.setVisible(false);
+            soloMessageField.setVisible(false);
+            connectedClients.setVisible(true);
+            messageField.setVisible(true);
+            chatList.setVisible(true);
+        } else{
+            soloChatList.setVisible(true);
+            soloMessageField.setVisible(true);
+            connectedClients.setVisible(false);
+            messageField.setVisible(false);
+            chatList.setVisible(false);
+        }
     }
 
     //Goes back to the selection scene

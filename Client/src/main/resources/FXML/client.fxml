@@ -4,25 +4,36 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane minHeight="360" minWidth="640" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
+<StackPane minHeight="360" minWidth="640" styleClass="loginBG" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
     <AnchorPane>
         <children>
-            <ComboBox fx:id="connectedClients" layoutX="509.0" layoutY="3.0" prefHeight="10.0" prefWidth="86.0" />
-            <ListView fx:id="chatList" layoutX="465.0" layoutY="58.0" prefHeight="301.0" prefWidth="175.0" />
-            <TextField fx:id="messageField" layoutX="478.0" layoutY="31.0" onAction="#sendChat" promptText="Enter text:" />
-         <Label fx:id="dispMsg" layoutX="14.0" layoutY="58.0" styleClass="LoginLabel" text="Awaiting User..." textAlignment="CENTER" />
-         <Button layoutX="14.0" layoutY="16.0" mnemonicParsing="false" onAction="#goBack" text="Back" />
+            <Pane layoutX="430" layoutY="0" prefHeight="494" prefWidth="210" styleClass="chat-panel">
+            <children>
+                  <Button layoutX="15.0" layoutY="459.0" mnemonicParsing="false" onAction="#switchChat" prefHeight="33.0" prefWidth="180.0" styleClass="switch-button" text="Switch Chat" />
+            </children></Pane>
+            <Button layoutX="14.0" layoutY="16.0" mnemonicParsing="false" onAction="#goBack" styleClass="secondary-button" text="Back" />
+            <ComboBox fx:id="connectedClients" layoutX="445.0" layoutY="10.0" prefHeight="25.0" prefWidth="180.0" visible="false" />
+            <ListView fx:id="chatList" layoutX="445.0" layoutY="55.0" prefHeight="360.0" prefWidth="180.0" visible="false" />
+            <ListView fx:id="soloChatList" layoutX="445.0" layoutY="55.0" prefHeight="360.0" prefWidth="180.0" />
+            <TextField fx:id="messageField" layoutX="445.0" layoutY="425.0" onAction="#sendChat" prefHeight="25.0" prefWidth="180.0" promptText="Enter text:" visible="false" />
+            <TextField fx:id="soloMessageField" layoutX="445.0" layoutY="425.0" onAction="#sendSoloChat" prefHeight="25.0" prefWidth="180.0" promptText="Enter text:" />
+            <Label fx:id="dispMsg" layoutX="36.0" layoutY="55.0" styleClass="LoginLabel" text="Awaiting User..." textAlignment="CENTER" />
             <ImageView fitHeight="378.0" fitWidth="414.0" layoutX="14.0" layoutY="116.0">
                 <Image url="@../Images/checkerboard.jpg" />
             </ImageView>
-            <GridPane fx:id="boardGrid" layoutX="36.0" layoutY="136.0" prefHeight="337.0" prefWidth="370.0">
-            <columnConstraints>
-               <ColumnConstraints />
-            </columnConstraints>
-            <rowConstraints>
-               <RowConstraints />
-            </rowConstraints></GridPane>
-            <StackPane fx:id="overlay" mouseTransparent = "true" prefHeight="494.0" prefWidth="641.0" style="-fx-background-color: rgba(0,0,0,0.8);" visible="false">
+            <Pane layoutX="26.0" layoutY="126.0" prefHeight="360.0" prefWidth="390.0" styleClass="board-frame">
+                <children>
+                    <GridPane fx:id="boardGrid" layoutX="10.0" layoutY="10.0" prefHeight="340.0" prefWidth="370.0">
+                        <columnConstraints>
+                            <ColumnConstraints />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints />
+                        </rowConstraints>
+                    </GridPane>
+                </children>
+            </Pane>
+            <StackPane fx:id="overlay" mouseTransparent="true" prefHeight="494.0" prefWidth="641.0" style="-fx-background-color: rgba(0,0,0,0.8);" visible="false">
                 <VBox fx:id="Rematch" alignment="CENTER" maxWidth="657.0" prefHeight="494.0" prefWidth="657.0" spacing="40">
                     <Label fx:id="winlose" styleClass="LoginLabel" text="You Win!" />
                     <Label styleClass="CreationLabel" text="" />
@@ -33,5 +44,6 @@
                     </HBox>
                 </VBox>
             </StackPane>
-        </children></AnchorPane>
+        </children>
+    </AnchorPane>
 </StackPane>

@@ -265,6 +265,12 @@ public class SceneManager {
                     clientController.handleGameCompletion(msg.message);
                 });
                 break;
+            //Send a show the message in the match chatbox
+            case "ind_message":
+                if (clientController != null) {
+                    clientController.addIndMessage(msg.toMessage());
+                }
+                break;
             //Fallback display message in chat if possible
             default:
                 //if the client controller is not null add the message to the chat
@@ -300,6 +306,9 @@ public class SceneManager {
                 }
                 break;
 
+            case "ind_message":
+                clientController.addIndMessage(msg.toMessage());
+                break;
             //Default add message to chat
             default:
                 clientController.addMessage(msg.toMessage());

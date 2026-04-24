@@ -60,8 +60,26 @@
 
     -fx-effect: dropshadow(gaussian, black, 6, 0.5, 0, 2);
 }
+
 .other-primary-button:hover {
     -fx-background-color: linear-gradient(to bottom right, #1e1e24, #000000);
+}
+
+.primary-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #ff5555, #c0392b);
+}
+
+.switch-button {
+    -fx-background-color: #4e4e54;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+
+    -fx-background-radius: 10px;
+    -fx-pref-height: 20px;
+}
+
+.switch-button:hover {
+    -fx-background-color: linear-gradient(to bottom right, gray, #4e4e54);
 }
 
 .secondary-button {
@@ -99,9 +117,38 @@
 .combo-box {
     -fx-pref-height: 40px;
     -fx-background-radius: 6px;
-    -fx-background-color: #eeeeee;
+    -fx-background-color: rgba(20, 20, 26, 1);;
 }
 
 .combo-box .list-cell {
-    -fx-text-fill: black;
+    -fx-text-fill: white;
+}
+
+.chat-panel {
+    -fx-background-color: rgba(30, 30, 36, 0.9);
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, black, 10, 0.4, 0, 4);
+}
+
+.board-frame {
+    -fx-background-color: rgba(0,0,0,0.3);
+    -fx-background-radius: 10px;
+    -fx-border-color: #c0392b;
+    -fx-border-radius: 10px;
+    -fx-border-width: 2px;
+}
+
+.list-view {
+    -fx-background-color: #2a2a2e;
+    -fx-background-radius: 8px;
+    -fx-control-inner-background: #2a2a2e;
+    -fx-text-fill: white;
+}
+
+.text-field {
+    -fx-background-radius: 8px;
+}
+
+.combo-box {
+    -fx-background-radius: 8px;
 }

@@ -247,6 +247,26 @@ public class Server{
 								}
 							}
 
+							//Handle a message being sent
+							if(data.type.equals("solo_message")){
+								User sender = users.get(data.sender);
+								User host;
+								User joiner;
+								// If sender is a joiner get host
+								if (matchesj2h.containsKey(sender)) {
+									host = matchesj2h.get(sender);
+									joiner = sender;
+								} else {
+									// otherwise sender is the host
+									host = sender;
+									joiner = matchesh2j.get(sender);
+								}
+								//Store in the log that a user sent a message
+								callback.accept(data.sender + " sent: " + data.message + " to opponent");
+								updateSingleClient(new Message("ind_message", "server", joiner.username, data.sender + " said: " + data.message));
+								updateSingleClient(new Message("ind_message", "server", host.username, data.sender + " said: " + data.message));
+							}
+
 							//Handle creating a group (also currently not in use)
 							if(data.type.equals("group_create")){
 								callback.accept(data.sender + " created a group: " + data.recipient + " with members " + data.message);
@@ -329,9 +349,6 @@ public class Server{
 									//Tell the person who tried to host that they have started hosting
 									updateSingleClient(new Message("hosting_started", "server", data.sender, ""));
 									//Create a new checkersboard for the host.
-									checkersBoard newBoard = new checkersBoard();
-									newBoard.populateBoard();
-									boards.put(host, newBoard);
 								}
 							}
 
@@ -687,6 +704,9 @@ public class Server{
 					hosts.remove(host);
 					//host always starts
 					turns.put(host, host.username);
+					checkersBoard newBoard = new checkersBoard();
+					newBoard.populateBoard();
+					boards.put(host, newBoard);
 				}
 				// Notify both players
 				updateSingleClient(new Message("match_created", "server", joiner.toString(), "You have successfully joined " + host, boards.get(host), -1, -1, null));

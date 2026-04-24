@@ -84,6 +84,11 @@ public class Client extends Thread{
 		send(new Message("message", uname, recipient, msg));
 	}
 
+	//Send a solo chat
+	public void sendSoloChat(String msg) {
+		send(new Message("solo_message", uname, "", msg));
+	}
+
 	//Send a chat to a group (currently unused)
 	public void groupSend(String msg, String group) {
 		send(new Message("group_send", uname, group, msg));
