@@ -368,6 +368,8 @@ public class Server{
 										//Send the joiner a message to leave the host's lobby
 										updateSingleClient(new Message("leave_lobby", "server", joiner.toString(), data.sender + " has stopped hosting!"));
 										//Cleanup the match between the host and joiner (SEE clearnupMatch() for more info)
+										joiner.wins++;
+										host.losses++;
 										cleanupMatch(host, joiner);
 									}
 									hosts.remove(host);
@@ -392,6 +394,9 @@ public class Server{
 									}
 									//Print to the log that the user left the hosts lobby
 									callback.accept(data.sender + " has left " + host + "'s lobby.");
+
+									host.wins++;
+									joiner.losses++;
 
 									//Tell the client to leave the lobby
 									updateSingleClient(new Message("leave_lobby", "server", host.toString(), data.sender + " has left your lobby!"));
@@ -709,8 +714,12 @@ public class Server{
 					boards.put(host, newBoard);
 				}
 				// Notify both players
-				updateSingleClient(new Message("match_created", "server", joiner.toString(), "You have successfully joined " + host, boards.get(host), -1, -1, null));
-				updateSingleClient(new Message("match_created", "server", host.toString(), joiner + " has joined your lobby.", boards.get(host), -1, -1, null));
+				String hostStats = host.username + "|" + host.wins + "W-" + host.losses + "L-" + host.draws + "D";
+				String joinerStats = joiner.username + "|" + joiner.wins + "W-" + joiner.losses + "L-" + joiner.draws + "D";
+				updateSingleClient(new Message("match_created", "server", joiner.toString(), joinerStats, boards.get(host), -1, -1, null));
+				updateSingleClient(new Message("match_created", "server", host.toString(), hostStats, boards.get(host), -1, -1, null));
+				updateSingleClient(new Message("opponent_stats", "server", joiner.toString(), hostStats, boards.get(host), -1, -1, null));
+				updateSingleClient(new Message("opponent_stats", "server", host.toString(), joinerStats, boards.get(host), -1, -1, null));
 
 				// Update host list for everyone
 				updateClients(new Message("host_list", "server", null, hosts.toString().substring(1, hosts.toString().length() - 1)));

@@ -24,7 +24,7 @@ public class ClientController {
     @FXML
     private ListView<String> chatList, soloChatList;
     @FXML
-    private Label dispMsg;
+    private Label dispMsg, myuname, mystats, oppuname, oppstats;
     @FXML
     private GridPane boardGrid;
     @FXML
@@ -56,6 +56,10 @@ public class ClientController {
 
     //A method to display a message in big text to the user, mostly used to display "Awaiting User..."
     public void displayText(String msg){
+        myuname.setVisible(false);
+        oppuname.setVisible(false);
+        mystats.setVisible(false);
+        oppstats.setVisible(false);
         //Make the text visible
         dispMsg.setVisible(true);
         //Set the text
@@ -256,6 +260,20 @@ public class ClientController {
     //Adds a user to the combo box of users
     public void addUser(String user) {
         connectedClients.getItems().add(user);
+    }
+
+    public void setMyLabel(String myStats) {
+        myuname.setText(myStats.substring(0, myStats.indexOf("|")));
+        mystats.setText(myStats.substring(myStats.indexOf("|") + 1));
+        myuname.setVisible(true);
+        mystats.setVisible(true);
+    }
+
+    public void setOppLabel(String myStats) {
+        oppuname.setText(myStats.substring(0, myStats.indexOf("|")));
+        oppstats.setText(myStats.substring(myStats.indexOf("|") + 1));
+        oppuname.setVisible(true);
+        oppstats.setVisible(true);
     }
 
     //Updates the list of users in the combobox of users

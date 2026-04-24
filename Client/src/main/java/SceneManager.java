@@ -194,6 +194,7 @@ public class SceneManager {
                         clientController.setBoard(msg.board);
                         clientController.initBoard();
                         clientController.setTurn(false);
+                        clientController.setMyLabel(msg.message);
                     });
                     //Otherwise
                 } else {
@@ -201,15 +202,15 @@ public class SceneManager {
                     Platform.runLater(() -> {
                         clientController.setBoard(msg.board);
                         clientController.initBoard();
+                        clientController.setMyLabel(msg.message);
                     });
                 }
-                //If the client controller is not null (which it shouldn't be after the above but just in case).
-                if (clientController != null) {
-                    //add join message to the chat
-                    clientController.addMessage(msg.toMessage());
-                }
                 break;
-
+            case "opponent_stats":
+                Platform.runLater(() -> {
+                    clientController.setOppLabel(msg.message);
+                });
+                break;
             //If the server notifies that you left the lobby
             case "leave_lobby":
                 //If the client controller is not null

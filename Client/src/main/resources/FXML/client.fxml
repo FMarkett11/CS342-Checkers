@@ -4,8 +4,8 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane minHeight="360" minWidth="640" styleClass="loginBG" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
-    <AnchorPane>
+<StackPane minHeight="360" minWidth="608.0" prefHeight="494.0" prefWidth="608.0" styleClass="loginBG" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
+    <AnchorPane prefWidth="604.0">
         <children>
             <Pane layoutX="430" layoutY="0" prefHeight="494" prefWidth="210" styleClass="chat-panel">
             <children>
@@ -23,7 +23,7 @@
             </ImageView>
             <Pane layoutX="26.0" layoutY="126.0" prefHeight="360.0" prefWidth="390.0" styleClass="board-frame">
                 <children>
-                    <GridPane fx:id="boardGrid" layoutX="10.0" layoutY="10.0" prefHeight="340.0" prefWidth="370.0">
+                    <GridPane fx:id="boardGrid" layoutX="10.0" layoutY="9.0" prefHeight="340.0" prefWidth="370.0">
                         <columnConstraints>
                             <ColumnConstraints />
                         </columnConstraints>
@@ -44,6 +44,16 @@
                     </HBox>
                 </VBox>
             </StackPane>
+            <HBox layoutX="13.0" layoutY="74.0" prefHeight="40.0" prefWidth="414.0" spacing="10.0">
+                <VBox alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
+                    <Label fx:id="myuname" alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="UserLabel" />
+                    <Label fx:id="mystats" alignment="CENTER_LEFT" maxWidth="Infinity" styleClass="UserStatsLabel" />
+                </VBox>
+                <VBox alignment="CENTER_RIGHT" spacing="2.0" HBox.hgrow="ALWAYS">
+                    <Label fx:id="oppuname" alignment="CENTER_RIGHT" maxWidth="Infinity" styleClass="UserLabel" />
+                    <Label fx:id="oppstats" alignment="CENTER_RIGHT" maxWidth="Infinity" styleClass="UserStatsLabel" />
+                </VBox>
+            </HBox>
         </children>
     </AnchorPane>
 </StackPane>
