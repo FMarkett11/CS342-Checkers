@@ -712,6 +712,8 @@ public class Server{
 				synchronized (matchLock) {
 					rematch.remove(host);
 					rematch.remove(joiner);
+					draw.remove(host);
+					draw.remove(joiner);
 					//If the host is not null
 					if (host != null) {
 						//Remove the host from the current matches
