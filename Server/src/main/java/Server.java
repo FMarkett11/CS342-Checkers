@@ -600,7 +600,7 @@ public class Server{
 								else player2 = matchesh2j.get(p1).username;
 								boolean jumped = Math.abs(data.row - oldrow) == 2;
 								String nextPlayer = data.sender;
-								// if NOT a jump switch turn
+								//if not a jump switch turn
 								if (!jumped) {
 									if (data.sender.equals(host.username)) {
 										nextPlayer = matchesh2j.get(host).username;
@@ -609,7 +609,7 @@ public class Server{
 									}
 									turns.put(host, nextPlayer);
 								} else {
-									// check if more jumps exist if yes, SAME PLAYER continues
+									//check if more jumps exist if yes, same player continues
 									ArrayList<int[]> moreMoves = game.Vmoves(data.row, data.col);
 									boolean canJumpAgain = false;
 									for (int[] m : moreMoves) {
@@ -619,7 +619,7 @@ public class Server{
 										}
 									}
 									if (!canJumpAgain) {
-										// no more jumps → switch turn
+										//no more jumps -> switch turn
 										if (data.sender.equals(host.username)) {
 											nextPlayer = matchesh2j.get(host).username;
 										} else {
