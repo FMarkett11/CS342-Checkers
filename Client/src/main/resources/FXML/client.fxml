@@ -4,7 +4,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane minHeight="360" minWidth="608.0" prefHeight="494.0" prefWidth="608.0" styleClass="loginBG" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ClientController">
+<StackPane minHeight="360" minWidth="608.0" prefHeight="494.0" prefWidth="608.0" styleClass="loginBG" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="ClientController">
     <AnchorPane prefWidth="604.0">
         <children>
             <Pane layoutX="430" layoutY="0" prefHeight="494" prefWidth="210" styleClass="chat-panel">

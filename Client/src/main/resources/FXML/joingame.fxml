@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane minHeight="360" minWidth="640" styleClass="loginBG" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JoinController">
+<StackPane minHeight="360" minWidth="640" styleClass="loginBG" stylesheets="@../CSS/styles.css" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="JoinController">
     <AnchorPane>
         <Button layoutX="15" layoutY="15" onAction="#goBack" styleClass="secondary-button" text="Back" />
     </AnchorPane>
