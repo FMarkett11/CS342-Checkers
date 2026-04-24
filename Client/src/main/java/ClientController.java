@@ -432,7 +432,7 @@ public class ClientController {
 
     @FXML
     private void reqDraw(){
-        if(isBotGame){
+        if(isBotGame || connectedClients.getItems().size() < 2){
             return;
         }
         GuiClient.clientConnection.reqDraw();

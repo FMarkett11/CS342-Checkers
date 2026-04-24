@@ -9,8 +9,6 @@ import java.util.function.Consumer;
 
 public class Client extends Thread{
 
-	boolean isBotGame = false;
-	boolean isBotHard = false;
 	Socket socketClient;
 	
 	ObjectOutputStream out;
