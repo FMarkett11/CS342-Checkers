@@ -18,6 +18,7 @@ public class SceneManager {
     public static JoinController joinController;
     public static UsernameController usernameController;
     public static SelectionController selectionController;
+    public static botSelectionController botSelectionController;
 
     //Buffer to hold messages that arrive before the correct scene is loaded
     private static final List<Message> pendingMessages = new ArrayList<>();
@@ -63,6 +64,10 @@ public class SceneManager {
                 //If the loaded scene is selection
                 case "selection.fxml":
                     selectionController = loader.getController();
+                    break;
+                //If the loaded scene is BotSelection.fxml
+                case "BotSelection.fxml":
+                    botSelectionController = loader.getController();
                     break;
                 //If the loaded scene is username.fxml
                 case "username.fxml":

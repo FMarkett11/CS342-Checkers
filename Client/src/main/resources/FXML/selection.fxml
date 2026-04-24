@@ -15,7 +15,10 @@
         </children>
     </AnchorPane>
     <VBox alignment="CENTER" maxWidth="320" spacing="40">
-        <Button layoutX="299.0" layoutY="148.0" minHeight="70.0" minWidth="300" mnemonicParsing="false" onAction="#goHost" styleClass="primary-button" text="Host" />
-        <Button layoutX="301.0" layoutY="186.0" minHeight="70.0" minWidth="300" mnemonicParsing="false" onAction="#goJoin" styleClass="other-primary-button" text="Join" />
+        <HBox alignment="CENTER" maxWidth="320" spacing="40">
+            <Button layoutX="299.0" layoutY="148.0" minHeight="70.0" minWidth="300" mnemonicParsing="false" onAction="#goHost" styleClass="primary-button" text="Host" />
+            <Button layoutX="301.0" layoutY="186.0" minHeight="70.0" minWidth="300" mnemonicParsing="false" onAction="#goJoin" styleClass="other-primary-button" text="Join" />
+        </HBox>
+        <Button layoutX="301.0" layoutY="186.0" minHeight="70.0" minWidth="300" mnemonicParsing="false" onAction="#goBotSelection" styleClass="other-primary-button" text="VS Bot" />
     </VBox>
 </StackPane>

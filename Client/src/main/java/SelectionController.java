@@ -19,6 +19,10 @@ public class SelectionController {
         GuiClient.clientConnection.isHost = true;
         GuiClient.clientConnection.isBlack = true;
     }
+    @FXML
+    private void goBotSelection(){
+        SceneManager.loadScene("BotSelection.fxml");
+    }// goes to bot selection scene to choose easy or hard mode //todo update scenemanager
 
     public void changeLbl(String msg){
         errorlbl.setVisible(true);

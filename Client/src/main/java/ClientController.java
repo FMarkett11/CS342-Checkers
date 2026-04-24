@@ -32,6 +32,8 @@ public class ClientController {
     private boolean isMyTurn = true;
     public checkersBoard board;
     private ArrayList<int[]> currentValidMoves = new ArrayList<>();
+    private boolean isBotGame = false;
+    private boolean isBotHard = false;
 
     private Button[][] boardButtons = new Button[8][8]; //stores all the button on the gridpane
     private int[] selectedPiece = null;  // stores [row, col] of clicked piece
@@ -136,17 +138,44 @@ public class ClientController {
                 clearHighlights();
                 return;
             }
+            if (isBotGame) { //if bot game dont send move to server rather make a bot move refresh and check for win
+                board.move(row, col, oldRow, oldCol, board.board[oldRow][oldCol]);
+                selectedPiece = null;
+                currentValidMoves.clear();
+                clearHighlights();
+                refreshBoard();
+                int result = board.checkWin();
+                if (result != 0) {
+                    if (result == 1) {
+                        handleGameCompletion("black");
+                    }
+                        else{
+                            handleGameCompletion("white");
+                        }
+                    return;
+                }
+                if (isBotHard) makeHardMove(); else makeEzMove();
+                refreshBoard();
+                result = board.checkWin();
+                if (result != 0) {
+                    if (result == 1) {
+                        handleGameCompletion("black");
+                    } else {
+                        handleGameCompletion("white");
+                    }
+                }
+            }else{
+                //Send the valid move to the server
+                Message moveMsg = new Message("make_move", GuiClient.clientConnection.uname, "server", oldRow + "," + oldCol, row, col, null
+                );
 
-            //Send the valid move to the server
-            Message moveMsg = new Message("make_move", GuiClient.clientConnection.uname, "server", oldRow + "," + oldCol, row, col, null
-            );
+                GuiClient.clientConnection.send(moveMsg);
 
-            GuiClient.clientConnection.send(moveMsg);
-
-            //Reset selection after sending move
-            selectedPiece = null;
-            currentValidMoves.clear();
-            clearHighlights();
+                //Reset selection after sending move
+                selectedPiece = null;
+                currentValidMoves.clear();
+                clearHighlights();
+            }
             return;
         }
 
@@ -161,12 +190,19 @@ public class ClientController {
 
             //Store selected piece
             selectedPiece = new int[]{row, col};
+            if (isBotGame) { //if bot game get moves locally rather than from server
+                clearHighlights();
+                selectedPiece = new int[]{row, col};
+                ArrayList<int[]> moves = board.Vmoves(row, col);
+                currentValidMoves = moves;
+                highlightMoves(moves);
+            }else {
+                //Request valid moves from the server
+                Message req = new Message("request_moves", GuiClient.clientConnection.uname, "server", "", row, col, null
+                );
 
-            //Request valid moves from the server
-            Message req = new Message("request_moves", GuiClient.clientConnection.uname, "server", "", row, col, null
-            );
-
-            GuiClient.clientConnection.send(req);
+                GuiClient.clientConnection.send(req);
+            }
         }
     }
 
@@ -302,10 +338,16 @@ public class ClientController {
 
     //Sends a message to the server requesting to send a chat
     public void sendChat(){
+        if (isBotGame) return; //if bot game dont send chat server breaks
         GuiClient.clientConnection.sendChat(messageField.getText(), connectedClients.getValue());
     }
 
     public void sendSoloChat(){
+        if (isBotGame) { //if bot game dont send chat server breaks
+            soloChatList.getItems().add("You: " + soloMessageField.getText());
+            soloMessageField.clear();
+            return;
+        }
         GuiClient.clientConnection.sendSoloChat(soloMessageField.getText());
     }
 
@@ -327,8 +369,10 @@ public class ClientController {
 
     //Goes back to the selection scene
     public void goBack(){
+        isBotGame = false; //reset bools
+        isBotHard = false;
         //Send a leave lobby message
-        GuiClient.clientConnection.leaveLobby();
+        if (!isBotGame) GuiClient.clientConnection.leaveLobby();
         //Make the user no longer a host
         GuiClient.clientConnection.isHost = false;
         //Load the selection scene
@@ -369,6 +413,13 @@ public class ClientController {
 
     @FXML
     private void rematch(){
+        if (isBotGame) { // if bot game start new bot game
+            overlay.setVisible(false);
+            overlay.setMouseTransparent(true);
+            reset();
+            startBotGame(isBotHard);
+            return;
+        }
         myuname.setVisible(false);
         oppuname.setVisible(false);
         mystats.setVisible(false);
@@ -381,12 +432,80 @@ public class ClientController {
 
     @FXML
     private void reqDraw(){
+        if(isBotGame){
+            return;
+        }
         GuiClient.clientConnection.reqDraw();
     }
 
     public void makeBoard(checkersBoard board){
         setBoard(board);
         refreshBoard();
+    }
+
+    public void startBotGame(boolean hard) {
+        isBotGame = true;
+        isBotHard = hard;
+        GuiClient.clientConnection.isBlack = false; // player is always white
+        board = new checkersBoard();
+        board.populateBoard();
+        initBoard();
+        setTurn(true);
+        setMyLabel(GuiClient.clientConnection.uname + "|Bot Mode");
+        if (hard){
+            setOppLabel("Bot|" + "Hard");
+        }else{
+            setOppLabel("Bot|" + "Easy");
+        }
+    }
+    private ArrayList<int[]> getAllBotMoves() {//get all moves for all pieces that are black (bot always plays black)
+        ArrayList<int[]> allMoves = new ArrayList<>();
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                String piece = board.board[r][c];
+                if (piece != null && piece.startsWith("b")) {
+                    for (int[] move : board.Vmoves(r, c)) {
+                        allMoves.add(new int[]{r, c, move[0], move[1]});
+                    }
+                }
+            }
+        }
+        return allMoves;
+    }
+
+    private void makeEzMove() { //get and make random moves
+        ArrayList<int[]> allMoves = getAllBotMoves();
+
+        if (allMoves.isEmpty()) {//no valid moves for black means bot lost
+            handleGameCompletion("white");
+            return;
+        }
+        int randselec = new java.util.Random().nextInt(allMoves.size());
+        int[] move = allMoves.get(randselec); //get a random move
+        board.move(move[2], move[3], move[0], move[1], board.board[move[0]][move[1]]); //make rand move
+    }
+
+    private void makeHardMove() {//make a random move but capture if available.
+        ArrayList<int[]> allMoves = getAllBotMoves();
+
+        if (allMoves.isEmpty()) { //no valid moves for black means bot lost
+            handleGameCompletion("white");
+            return; }
+
+        ArrayList<int[]> captures = new ArrayList<>();// arraylist to store possible captures
+        for (int[] move : allMoves) {//if magnitude of move is 2 then is a caputure
+            if (Math.abs(move[2] - move[0]) == 2) captures.add(move);
+        }
+        ArrayList<int[]> preferred;
+        if(captures.isEmpty()){ // if there are captures prefer those else choose random move from all moves
+            preferred = allMoves;
+        }
+        else{
+            preferred = captures;
+        }
+        int randselec = new java.util.Random().nextInt(preferred.size());
+        int[] move = preferred.get(randselec);
+        board.move(move[2], move[3], move[0], move[1], board.board[move[0]][move[1]]);
     }
 
 
