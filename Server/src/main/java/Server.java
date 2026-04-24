@@ -650,6 +650,8 @@ public class Server{
 										joiner.wins++;
 										saveUsers();
 									}
+									draw.remove(joiner);
+									draw.remove(host);
 									whoWon.recipient = player1;
 									updateSingleClient(whoWon);
 									whoWon.recipient = player2;
