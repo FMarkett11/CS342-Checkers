@@ -22,7 +22,7 @@ A Java-based Checkers game created for a CS342 course project featuring classic 
 
 ---
 
-## 🏃‍♂️ How To Run
+## How To Run
 
 1. Have Java and Maven installed.
 2. Clone the repository:
